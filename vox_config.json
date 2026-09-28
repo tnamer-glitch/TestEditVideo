@@ -26,10 +26,10 @@
     {
       "start": 9.2,
       "end": 13.6,
-      "kicker": "Kenapa ia mudah",
+      "kicker": "Khasiatnya",
       "headline": [
-        "Sesuai untuk",
-        "rutin harian"
+        "Minum 1 sachet",
+        "sehari sahaja"
       ],
       "highlight": 1
     },
@@ -89,7 +89,7 @@
   ],
   "stamps": [
     {
-      "text": "FORMULA BAHARU",
+      "text": "COKLAT",
       "x": 780,
       "y": 620,
       "start": 6.3,
@@ -99,25 +99,26 @@
   "lists": [
     {
       "items": [
-        "Mudah dibancuh",
-        "Sedap perisa coklat",
-        "Sesuai ibu sibuk"
+        "Bantu turunkan berat badan",
+        "Kawal selera makan",
+        "Lancarkan pencernaan",
+        "Tingkatkan tenaga"
       ],
       "start": 9.5,
       "end": 13.6,
-      "y": 1150
+      "y": 1110
     }
   ],
   "end_card": {
     "duration": 3.0,
-    "kicker": "Langkah seterusnya",
+    "kicker": "Arbeela Slim Chocolate",
     "product_name": "Arbeela Slim",
     "lines": [
-      "Mula langkah pertama",
-      "hari ini."
+      "Badan ideal,",
+      "keyakinan diri!"
     ],
-    "button": "KLIK & ORDER",
-    "note": "Tanya dulu, tiada paksaan"
+    "button": "DAPATKAN SEKARANG",
+    "note": "Badan ideal bermula hari ini"
   },
   "disclaimer": "*Keputusan berbeza mengikut individu. Amalkan pemakanan seimbang & gaya hidup aktif."
 }

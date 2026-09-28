@@ -54,9 +54,9 @@ def product_tag(name, sub, badge):
 
 
 def bullet(text, kind):
-    txt = text_layer(text, FONT_BOLD, 54, DARK, max_w=720, align="left", shadow=False)
+    txt = text_layer(text, FONT_BOLD, 48, DARK, max_w=800, align="left", shadow=False)
     ic = icon(kind, 76)
-    cw, ch = 860, max(130, txt.height + 30)
+    cw, ch = 940, max(130, txt.height + 30)
     layer = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
     ImageDraw.Draw(layer).rounded_rectangle((0, 0, cw - 1, ch - 1), radius=34, fill=(255, 255, 255, 240))
     layer.alpha_composite(ic, (34, (ch - ic.height) // 2))
