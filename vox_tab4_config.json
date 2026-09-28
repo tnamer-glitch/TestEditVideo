@@ -1,0 +1,93 @@
+{
+  "input": "input/tab4-turbo.mp4",
+  "output": "output/tab4-turbo-vox.mp4",
+  "mirror": false,
+  "theme": {
+    "paper_top": [12, 10, 8],
+    "paper_bot": [52, 38, 12],
+    "ink": [255, 246, 225],
+    "hl_text": [22, 14, 2],
+    "magenta": [176, 112, 8],
+    "yellow": [236, 176, 32],
+    "red": [255, 226, 70],
+    "note": [255, 214, 120]
+  },
+  "beats": [
+    {
+      "start": 0.0,
+      "end": 4.4,
+      "kicker": "Masalahnya",
+      "headline": ["Tenaga cepat habis,", "stamina merosot?"],
+      "highlight": 1
+    },
+    {
+      "start": 4.4,
+      "end": 9.0,
+      "kicker": "Jawapannya",
+      "headline": ["Kenalkan", "TAB4 Turbo"],
+      "highlight": 1
+    },
+    {
+      "start": 9.0,
+      "end": 12.6,
+      "kicker": "Khasiatnya",
+      "headline": ["Satu sachet,", "tenaga ekstra"],
+      "highlight": 1
+    },
+    {
+      "start": 12.6,
+      "end": 15.0,
+      "kicker": "Rahsianya",
+      "headline": ["Lebih kuat,", "lebih lama!"],
+      "highlight": [0, 1]
+    }
+  ],
+  "stickies": [
+    {
+      "text": "Balik kerja terus penat. Tak macam dulu.",
+      "start": 1.8,
+      "end": 4.4,
+      "x": 330,
+      "y": 1420,
+      "rot": 5
+    }
+  ],
+  "zooms": [
+    {"start": 7.6, "end": 8.9, "zoom": 1.3, "x": 0.4, "y": 0.75}
+  ],
+  "circles": [
+    {"x": 0.33, "y": 0.64, "rx": 180, "ry": 280, "start": 7.8, "end": 8.9}
+  ],
+  "arrows": [
+    {
+      "text": "Formula turbo",
+      "from_x": 250,
+      "from_y": 1540,
+      "to_x": 0.36,
+      "to_y": 0.62,
+      "start": 5.7,
+      "end": 6.9
+    }
+  ],
+  "stamps": [
+    {"text": "KHUSUS LELAKI", "x": 790, "y": 620, "start": 5.9, "end": 7.4},
+    {"text": "FORMULA TURBO", "x": 790, "y": 620, "start": 13.2, "end": 15.0}
+  ],
+  "lists": [
+    {
+      "items": ["Tenaga ekstra", "Tahan lebih lama", "Stamina kekal padu", "Keyakinan diri"],
+      "start": 9.3,
+      "end": 12.6,
+      "y": 1110
+    }
+  ],
+  "end_card": {
+    "duration": 3.0,
+    "kicker": "Khusus untuk lelaki",
+    "product_name": "TAB4 Turbo",
+    "lines": ["Kuasa lelaki,", "keyakinan sejati!"],
+    "button": "DAPATKAN SEKARANG",
+    "note": "Lebih kuat, lebih lama!"
+  },
+  "disclaimer": "*Suplemen, bukan ubat. Keputusan berbeza mengikut individu. Rujuk doktor jika ada masalah kesihatan."
+}

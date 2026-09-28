@@ -31,6 +31,7 @@ MAGENTA = (206, 18, 104)
 INK_CARD = (30, 20, 30)     # teks atas kad putih/kuning
 YELLOW = (255, 206, 38)     # highlighter emas
 RED = (255, 232, 0)         # marker kuning terang
+NOTE = (255, 190, 220)      # nota tangan pada end card
 
 # Kad video
 CARD_W, CARD_H, BORDER = 740, 1316, 14
@@ -357,7 +358,7 @@ def end_card(paper, ec, t):
     if np_ > 0:
         fn = font(HAND, 48)
         tw = fn.getlength(ec["note"])
-        d.text(((W - tw) / 2, 1300), ec["note"], font=fn, fill=(255, 190, 220) + (int(255 * np_),))
+        d.text(((W - tw) / 2, 1300), ec["note"], font=fn, fill=NOTE + (int(255 * np_),))
     return f
 
 
@@ -504,6 +505,9 @@ def whoosh_track(times, total, path, sr=44100):
 def main(cfg_path):
     with open(cfg_path, encoding="utf-8") as fh:
         cfg = json.load(fh)
+    # tema warna pilihan dalam config, cth. "theme": {"paper_top": [r, g, b], "yellow": [...]}
+    for k, v in cfg.get("theme", {}).items():
+        globals()[k.upper()] = tuple(v)
     src, out = cfg["input"], cfg["output"]
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     clip_dur = probe_duration(src)
