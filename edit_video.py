@@ -10,7 +10,7 @@ import subprocess
 import sys
 
 import imageio_ffmpeg
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 from make_video import (
     DARK, FONT_BOLD, FONT_REG, GOLD, PINK, PLUM_BOT, PLUM_TOP, WA_GREEN, WHITE,
@@ -112,6 +112,45 @@ def end_card(ec, t):
     return f
 
 
+_photo = {}
+
+
+def photo_card(path, size):
+    if (path, size) not in _photo:
+        img = Image.open(path).convert("RGBA").resize((size, size), Image.LANCZOS)
+        m = Image.new("L", img.size, 0)
+        ImageDraw.Draw(m).rounded_rectangle((0, 0, size - 1, size - 1), radius=36, fill=255)
+        card = Image.new("RGBA", (size + 20, size + 20), (0, 0, 0, 0))
+        ImageDraw.Draw(card).rounded_rectangle((0, 0, size + 19, size + 19), radius=44, fill=GOLD + (255,))
+        img.putalpha(m)
+        card.alpha_composite(img, (10, 10))
+        _photo[(path, size)] = card
+    return _photo[(path, size)]
+
+
+def comment_bubble(name, text):
+    fn, ft = ImageFont.truetype(FONT_BOLD, 34), ImageFont.truetype(FONT_REG, 40)
+    tw = int(max(fn.getlength(name), ft.getlength(text))) + 60
+    layer = Image.new("RGBA", (tw + 110, 150), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    d.ellipse((0, 30, 84, 114), fill=PINK)
+    d.text((42 - fn.getlength(name[0]) / 2, 50), name[0], font=ImageFont.truetype(FONT_BOLD, 40), fill=WHITE)
+    d.rounded_rectangle((100, 0, tw + 100, 146), radius=36, fill=(255, 255, 255, 245))
+    d.text((130, 22), name, font=fn, fill=DARK)
+    d.text((130, 74), text, font=ft, fill=(40, 40, 40))
+    return layer
+
+
+def testimonial_section(ts, t):
+    f = gradient(PLUM_TOP, PLUM_BOT).copy()
+    bokeh(f, t, GOLD, 8)
+    place(f, text_layer(ts["title"], FONT_BOLD, 76, GOLD), W // 2, 230, t, 0.0, 0.4, "pop")
+    place(f, photo_card(ts["image"], 820), W // 2, 790, t, 0.3, 0.5, "pop")
+    for j, c in enumerate(ts["comments"]):
+        place(f, comment_bubble(c["name"], c["text"]), W // 2, 1340 + j * 180, t, 1.4 + j * 0.8, 0.45, "slide_left")
+    return f
+
+
 def disclaimer(frame, text, dark_bg):
     col = (235, 215, 228) if dark_bg else WHITE
     lyr = text_layer(text, FONT_REG, 28, col, max_w=960, shadow=True)
@@ -131,7 +170,8 @@ def main(cfg_path):
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     clip_dur = probe_duration(src)
     ec = cfg["end_card"]
-    total = clip_dur + ec["duration"]
+    ts = cfg.get("testimonials")
+    total = clip_dur + (ts["duration"] if ts else 0) + ec["duration"]
 
     vf = ("hflip," if cfg.get("mirror") else "") + \
         f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}"
@@ -161,15 +201,22 @@ def main(cfg_path):
         if i % FPS == 0:
             print(f"\rklip {t:.0f}s", end="", flush=True)
     last = frame
-    n_end = int(ec["duration"] * FPS)
-    for k in range(n_end):
-        t = k / FPS
-        f = end_card(ec, t)
-        if t < 0.35:  # crossfade dari frame terakhir klip
-            f = Image.blend(last, f, ease_out_cubic(t / 0.35))
-        progress(f, i / FPS + t, total)
-        disclaimer(f, cfg["disclaimer"], True)
-        enc.stdin.write(f.convert("RGB").tobytes())
+    sections = []
+    if ts:
+        sections.append((ts["duration"], lambda t: testimonial_section(ts, t)))
+    sections.append((ec["duration"], lambda t: end_card(ec, t)))
+    for dur, fn in sections:
+        prev = last
+        for k in range(int(dur * FPS)):
+            t = k / FPS
+            f = fn(t)
+            if t < 0.35:  # crossfade dari seksyen sebelumnya
+                f = Image.blend(prev, f, ease_out_cubic(t / 0.35))
+            progress(f, i / FPS, total)
+            disclaimer(f, cfg["disclaimer"], True)
+            enc.stdin.write(f.convert("RGB").tobytes())
+            last = f
+            i += 1
     enc.stdin.close()
     enc.wait()
     dec.wait()

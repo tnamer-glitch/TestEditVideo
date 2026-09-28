@@ -21,7 +21,7 @@
     {
       "type": "product",
       "name": "ARBEELA SLIM",
-      "sub": "Chocolate · Susu Kambing",
+      "sub": "Perisa Coklat",
       "badge": "Minum 1 sachet sehari",
       "start": 4.2,
       "end": 9.2,
@@ -63,5 +63,20 @@
     "note": "Bermula hari ini",
     "product_name": "ARBEELA SLIM"
   },
-  "disclaimer": "*Keputusan berbeza mengikut individu. Amalkan pemakanan seimbang & gaya hidup aktif."
+  "disclaimer": "*Keputusan berbeza mengikut individu. Amalkan pemakanan seimbang & gaya hidup aktif.",
+  "testimonials": {
+    "duration": 5.0,
+    "title": "Testimoni Pengguna",
+    "image": "assets/testimoni-sebelum-selepas.jpg",
+    "comments": [
+      {
+        "name": "Siti R.",
+        "text": "Hasil konsisten, dah loss 7 kg"
+      },
+      {
+        "name": "Nur S.",
+        "text": "Suka sebab rasa kenyang lebih lama"
+      }
+    ]
+  }
 }

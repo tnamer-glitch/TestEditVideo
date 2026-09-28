@@ -78,7 +78,7 @@
   ],
   "arrows": [
     {
-      "text": "Susu kambing, perisa coklat",
+      "text": "Perisa coklat",
       "from_x": 640,
       "from_y": 1320,
       "to_x": 0.34,
@@ -136,6 +136,26 @@
       }
     ],
     "stamp": "TESTIMONI SEBENAR"
+  },
+  "proof": {
+    "duration": 4.5,
+    "kicker": "Bukti pengguna",
+    "headline": [
+      "65kg → 52kg",
+      "turun 13kg"
+    ],
+    "highlight": 1,
+    "image": "assets/testimoni-sebelum-selepas.jpg",
+    "notes": [
+      {
+        "text": "\"Hasil konsisten, dah loss 7 kg!\" — Siti R.",
+        "start": 1.6,
+        "x": 700,
+        "y": 1520,
+        "rot": -4,
+        "w": 460
+      }
+    ]
   },
   "end_card": {
     "duration": 3.0,

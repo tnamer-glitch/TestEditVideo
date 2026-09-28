@@ -415,6 +415,37 @@ def testimonial_section(paper, ts, t):
     return f
 
 
+_photos = {}
+
+
+def proof_section(paper, pf, t):
+    """Gambar testimoni sebagai foto kolaj + nota sticky."""
+    f = paper.copy()
+    kicker(f, pf["kicker"], t, 0.0)
+    headline(f, pf["headline"], t, 0.15, hl_idx=pf.get("highlight"), seed=66)
+    if pf["image"] not in _photos:
+        sz = 860
+        img = Image.open(pf["image"]).convert("RGBA").resize((sz, sz), Image.LANCZOS)
+        card = Image.new("RGBA", (sz + 36, sz + 36), (252, 251, 247, 255))
+        card.paste(img, (18, 18))
+        sh = Image.new("RGBA", (sz + 140, sz + 140), (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rectangle((60, 70, sz + 96, sz + 106), fill=(0, 0, 0, 120))
+        sh = sh.filter(ImageFilter.GaussianBlur(20)).rotate(1.8, expand=True, resample=Image.BICUBIC)
+        _photos[pf["image"]] = (card.rotate(1.8, expand=True, resample=Image.BICUBIC), sh)
+    card, sh = _photos[pf["image"]]
+    p = ease((t - 0.3) / 0.45)
+    if p > 0:
+        sc = 1.08 - 0.08 * p
+        c2 = card.resize((int(card.width * sc), int(card.height * sc)), Image.BILINEAR)
+        c2.putalpha(c2.getchannel("A").point(lambda v: int(v * p)))
+        cy = 960
+        f.alpha_composite(sh, ((W - sh.width) // 2 + 8, cy - sh.height // 2 + 14))
+        f.alpha_composite(c2, ((W - c2.width) // 2, cy - c2.height // 2))
+    for n in pf.get("notes", []):
+        sticky(f, n["text"], t, n["start"], 99, n["x"], n["y"], n.get("rot", -4), n.get("w", 430))
+    return f
+
+
 def swipe_in(prev, new, t, dur=0.3):
     if t >= dur or prev is None:
         return new
@@ -470,8 +501,10 @@ def main(cfg_path):
     clip_dur = probe_duration(src)
     ec = cfg["end_card"]
     ts = cfg.get("testimonials")
+    pf = cfg.get("proof")
     ts_dur = ts["duration"] if ts else 0.0
-    total = clip_dur + ts_dur + ec["duration"]
+    pf_dur = pf["duration"] if pf else 0.0
+    total = clip_dur + ts_dur + pf_dur + ec["duration"]
 
     paper = make_paper()
     grain = make_grain()
@@ -513,6 +546,8 @@ def main(cfg_path):
     sections = []
     if ts:
         sections.append((ts["duration"], lambda t: testimonial_section(paper, ts, t)))
+    if pf:
+        sections.append((pf["duration"], lambda t: proof_section(paper, pf, t)))
     sections.append((ec["duration"], lambda t: end_card(paper, ec, t)))
     for dur, fn in sections:
         prev = last
@@ -530,7 +565,8 @@ def main(cfg_path):
 
     # SFX whoosh pada setiap kemasukan teks
     times = sorted({b["start"] for b in cfg["beats"]} | {n["start"] for n in cfg.get("stickies", [])}
-                   | {l["start"] for l in cfg.get("lists", [])} | {clip_dur, clip_dur + ts_dur}
+                   | {l["start"] for l in cfg.get("lists", [])} | {clip_dur, clip_dur + ts_dur, clip_dur + ts_dur + pf_dur}
+                   | ({clip_dur + ts_dur + n["start"] for n in pf.get("notes", [])} if pf else set())
                    | ({clip_dur + 0.6 + j * 0.7 for j in range(len(ts["comments"]))} if ts else set()))
     sfx = out + ".sfx.wav"
     whoosh_track(times, total, sfx)
