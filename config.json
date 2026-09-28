@@ -1,0 +1,30 @@
+{
+  "product_name": "NAMA PRODUK",
+  "tagline": "Cara mudah untuk ibu sibuk",
+  "whatsapp": "01X-XXX XXXX",
+  "hook_small": "Baju raya tahun lepas...",
+  "hook_big": "DAH TAK MUAT?",
+  "pain_title": "Pernah rasa macam ni?",
+  "pains": [
+    "Malu nak masuk gambar",
+    "Cepat penat & lesu",
+    "Diet & gym tak pernah konsisten"
+  ],
+  "agitate_big": "Bukan salah awak.",
+  "agitate_small": "Rutin ibu bekerja memang padat. Awak perlukan cara yang MUDAH.",
+  "benefits": [
+    "Mudah masuk rutin harian",
+    "Disertai panduan pemakanan",
+    "Sesuai untuk ibu sibuk"
+  ],
+  "desire_title": "Bayangkan...",
+  "desires": [
+    "Yakin bergambar semula",
+    "Aktif bersama anak-anak",
+    "Sarung semula baju kegemaran"
+  ],
+  "cta_title": "Mula langkah pertama hari ini",
+  "cta_button": "WhatsApp Kami",
+  "cta_note": "Tanya dulu, tiada paksaan",
+  "disclaimer": "*Keputusan berbeza mengikut individu. Amalkan pemakanan seimbang & gaya hidup aktif."
+}
