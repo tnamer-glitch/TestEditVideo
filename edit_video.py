@@ -129,7 +129,7 @@ def photo_card(path, size):
 
 
 def comment_bubble(name, text):
-    fn, ft = ImageFont.truetype(FONT_BOLD, 34), ImageFont.truetype(FONT_REG, 40)
+    fn, ft = ImageFont.truetype(FONT_BOLD, 32), ImageFont.truetype(FONT_REG, 36)
     tw = int(max(fn.getlength(name), ft.getlength(text))) + 60
     layer = Image.new("RGBA", (tw + 110, 150), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)

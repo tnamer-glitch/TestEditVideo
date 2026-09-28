@@ -110,7 +110,7 @@
     }
   ],
   "testimonials": {
-    "duration": 5.0,
+    "duration": 4.0,
     "kicker": "Kata pelanggan",
     "headline": [
       "Rasa kenyang",
@@ -119,23 +119,19 @@
     "highlight": 1,
     "comments": [
       {
-        "name": "Nur S.",
-        "text": "Saya suka sebab rasa kenyang lebih lama.",
+        "name": "Ayu M.",
+        "text": "Sarapan makan telur je, tapi kenyang sampai malam!",
         "likes": 1,
         "circle": true
       },
       {
-        "name": "Ayu M.",
-        "text": "Minum Arbeela Slim, sarapan makan telur je... sampai sekarang kenyang lagi!",
-        "likes": 0
-      },
-      {
-        "name": "Musliha C.",
-        "text": "Rasa kenyang lebih lama, memang membantu.",
+        "name": "Nur S.",
+        "text": "Saya suka sebab rasa kenyang lebih lama.",
         "likes": 1
       }
     ],
-    "stamp": "TESTIMONI SEBENAR"
+    "stamp": "TESTIMONI SEBENAR",
+    "y": 760
   },
   "proof": {
     "duration": 4.5,

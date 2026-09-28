@@ -395,7 +395,7 @@ def testimonial_section(paper, ts, t):
     f = paper.copy()
     kicker(f, ts["kicker"], t, 0.0)
     headline(f, ts["headline"], t, 0.15, hl_idx=ts.get("highlight"), seed=55)
-    y = 560
+    y = ts.get("y", 560)
     for i, c in enumerate(ts["comments"]):
         st = 0.6 + i * 0.7
         p = ease((t - st) / 0.35)
