@@ -78,7 +78,7 @@
   ],
   "arrows": [
     {
-      "text": "Susu kambing, perisa mixberry",
+      "text": "Susu kambing, perisa coklat",
       "from_x": 640,
       "from_y": 1320,
       "to_x": 0.34,
@@ -100,7 +100,7 @@
     {
       "items": [
         "Mudah dibancuh",
-        "Sedap perisa mixberry",
+        "Sedap perisa coklat",
         "Sesuai ibu sibuk"
       ],
       "start": 9.5,
