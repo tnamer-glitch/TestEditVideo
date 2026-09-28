@@ -577,11 +577,13 @@ def main(cfg_path):
                    | ({clip_dur + ts_dur + n["start"] for n in pf.get("notes", [])} if pf else set())
                    | ({clip_dur + 0.6 + j * 0.7 for j in range(len(ts["comments"]))} if ts else set()))
     sfx = out + ".sfx.wav"
+    # senyapkan perkataan tertentu dalam suara asal, cth. [[14.06, 14.52]]
+    mute_f = "".join(f"volume=0:enable='between(t,{m0},{m1})'," for m0, m1 in cfg.get("mute", []))
     whoosh_track(times, total, sfx)
     subprocess.run(
         [FF, "-y", "-loglevel", "error", "-i", tmp_video, "-i", src, "-i", sfx,
          "-filter_complex",
-         f"[1:a]loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100,afade=t=out:st={clip_dur - 0.4}:d=0.4,"
+         f"[1:a]{mute_f}loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100,afade=t=out:st={clip_dur - 0.4}:d=0.4,"
          f"apad=whole_dur={total:.3f}[v];[2:a]aresample=44100,volume=0.5[s];"
          f"[v][s]amix=inputs=2:duration=first:normalize=0[a]",
          "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",

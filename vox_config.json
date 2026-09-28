@@ -2,6 +2,12 @@
   "input": "input/IMG_9993.MOV",
   "output": "output/arbeela-slim-vox.mp4",
   "mirror": true,
+  "mute": [
+    [
+      14.06,
+      14.52
+    ]
+  ],
   "beats": [
     {
       "start": 0.0,
