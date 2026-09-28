@@ -1,0 +1,21 @@
+{
+  "input": "input/IMG_9993.MOV",
+  "output": "output/arbeela-slim-edit.mp4",
+  "mirror": true,
+  "overlays": [
+    {"type": "caption", "text": "Ibu sibuk, tak sempat gym?", "start": 0.2, "end": 2.2, "y": 330},
+    {"type": "caption", "text": "Ni rahsia dalam beg saya...", "start": 2.2, "end": 4.2, "y": 330, "highlight": true},
+    {"type": "product", "name": "ARBEELA SLIM", "sub": "Susu Kambing Perisa Mixberry", "badge": "Formula Baharu", "start": 4.2, "end": 9.2, "y": 1330},
+    {"type": "bullets", "items": ["Mudah dibancuh", "Sedap perisa mixberry", "Sesuai rutin ibu sibuk"], "start": 9.2, "end": 13.6, "y": 1180, "icon": "check"},
+    {"type": "caption", "text": "Nak yakin bergambar semula?", "start": 13.6, "end": 16.8, "y": 330},
+    {"type": "caption", "text": "Jom cuba!", "start": 14.6, "end": 16.8, "y": 470, "highlight": true}
+  ],
+  "end_card": {
+    "duration": 3.0,
+    "title": "Mula langkah pertama hari ini",
+    "button": "Klik & Order Sekarang",
+    "note": "Tanya dulu, tiada paksaan",
+    "product_name": "ARBEELA SLIM"
+  },
+  "disclaimer": "*Keputusan berbeza mengikut individu. Amalkan pemakanan seimbang & gaya hidup aktif."
+}
