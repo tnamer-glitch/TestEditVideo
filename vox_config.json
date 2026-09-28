@@ -109,6 +109,34 @@
       "y": 1110
     }
   ],
+  "testimonials": {
+    "duration": 5.0,
+    "kicker": "Kata pelanggan",
+    "headline": [
+      "Rasa kenyang",
+      "lebih lama"
+    ],
+    "highlight": 1,
+    "comments": [
+      {
+        "name": "Nur S.",
+        "text": "Saya suka sebab rasa kenyang lebih lama.",
+        "likes": 1,
+        "circle": true
+      },
+      {
+        "name": "Ayu M.",
+        "text": "Minum Arbeela Slim, sarapan makan telur je... sampai sekarang kenyang lagi!",
+        "likes": 0
+      },
+      {
+        "name": "Musliha C.",
+        "text": "Rasa kenyang lebih lama, memang membantu.",
+        "likes": 1
+      }
+    ],
+    "stamp": "TESTIMONI SEBENAR"
+  },
   "end_card": {
     "duration": 3.0,
     "kicker": "Arbeela Slim Chocolate",

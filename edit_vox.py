@@ -353,6 +353,77 @@ def end_card(paper, ec, t):
     return f
 
 
+def comment_card(name, text, likes, seed):
+    """Kad komen gaya media sosial (nama dipendekkan untuk privasi)."""
+    fn, ft, fs = font(SANS_B, 38), font(SANS, 42), font(SANS_B, 30)
+    words, lines, cur = text.split(), [], ""
+    for wd in words:
+        tr = (cur + " " + wd).strip()
+        if ft.getlength(tr) <= 640 or not cur:
+            cur = tr
+        else:
+            lines.append(cur)
+            cur = wd
+    lines.append(cur)
+    bw = int(max(fn.getlength(name), max(ft.getlength(l) for l in lines))) + 70
+    bh = 80 + len(lines) * 54
+    cw, ch = bw + 150, bh + 80
+    lyr = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+    d = ImageDraw.Draw(lyr)
+    rough_rect(d, (8, 8, cw - 8, ch - 8), (0, 0, 0, 50), seed)
+    d.rectangle((0, 0, cw - 16, ch - 16), fill=(255, 255, 255, 255))
+    hue = [(233, 120, 150), (120, 150, 220), (240, 170, 80), (130, 190, 140)][seed % 4]
+    d.ellipse((20, 22, 104, 106), fill=hue)
+    ini = name[0].upper()
+    d.text((62 - font(SANS_B, 44).getlength(ini) / 2, 36), ini, font=font(SANS_B, 44), fill=WHITE_T)
+    d.rounded_rectangle((122, 16, 122 + bw, 16 + bh), radius=34, fill=(240, 242, 245))
+    d.text((150, 30), name, font=fn, fill=INK)
+    for i, ln in enumerate(lines):
+        d.text((150, 80 + i * 54), ln, font=ft, fill=(40, 40, 40))
+    d.text((150, bh + 26), "Suka    Balas", font=fs, fill=(101, 103, 107))
+    if likes:
+        lx = 122 + bw - 70
+        d.ellipse((lx, bh + 24, lx + 36, bh + 60), fill=(24, 119, 242))
+        d.text((lx + 44, bh + 26), str(likes), font=fs, fill=(101, 103, 107))
+    return lyr
+
+
+WHITE_T = (255, 255, 255)
+
+
+def testimonial_section(paper, ts, t):
+    f = paper.copy()
+    kicker(f, ts["kicker"], t, 0.0)
+    headline(f, ts["headline"], t, 0.15, hl_idx=ts.get("highlight"), seed=55)
+    y = 560
+    for i, c in enumerate(ts["comments"]):
+        st = 0.6 + i * 0.7
+        p = ease((t - st) / 0.35)
+        card = comment_card(c["name"], c["text"], c.get("likes", 1), i)
+        if p > 0:
+            rot = (-1.5, 1.2, -0.8, 1.0)[i % 4]
+            lyr = card.rotate(rot, expand=True, resample=Image.BICUBIC)
+            lyr.putalpha(lyr.getchannel("A").point(lambda v: int(v * p)))
+            x = (W - lyr.width) // 2 + int((1 - p) * (220 if i % 2 else -220))
+            f.alpha_composite(lyr, (x, y))
+            if c.get("circle"):
+                cx, cy = W / 2, y + lyr.height / 2
+                marker_circle(f, cx, cy, lyr.width / 2 + 30, lyr.height / 2 + 34, t, st + 0.5, 99)
+        y += card.height + 60
+    if ts.get("stamp"):
+        stamp(f, ts["stamp"], W // 2, min(y + 70, 1660), t, 0.6 + len(ts["comments"]) * 0.7, 99, rot=-6)
+    return f
+
+
+def swipe_in(prev, new, t, dur=0.3):
+    if t >= dur or prev is None:
+        return new
+    off = int(W * (1 - ease(t / dur)))
+    base = prev.copy()
+    base.alpha_composite(new.crop((0, 0, W - off, H)), (off, 0))
+    return base
+
+
 def disclaimer(frame, text):
     f = font(SANS, 26)
     tw = f.getlength(text)
@@ -398,7 +469,9 @@ def main(cfg_path):
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     clip_dur = probe_duration(src)
     ec = cfg["end_card"]
-    total = clip_dur + ec["duration"]
+    ts = cfg.get("testimonials")
+    ts_dur = ts["duration"] if ts else 0.0
+    total = clip_dur + ts_dur + ec["duration"]
 
     paper = make_paper()
     grain = make_grain()
@@ -436,24 +509,29 @@ def main(cfg_path):
         if i % FPS == 0:
             print(f"\rklip {t:.0f}s", end="", flush=True)
 
-    for k in range(int(ec["duration"] * FPS)):
-        t = k / FPS
-        f = end_card(paper, ec, t)
-        if t < 0.3:  # 'swipe' kertas dari kanan
-            off = int(W * (1 - ease(t / 0.3)))
-            base = last.copy()
-            base.alpha_composite(f.crop((0, 0, W - off, H)), (off, 0))
-            f = base
-        disclaimer(f, cfg["disclaimer"])
-        f.alpha_composite(grain[(i + k) % len(grain)])
-        enc.stdin.write(f.convert("RGB").tobytes())
+    # Seksyen selepas klip: testimoni (jika ada) kemudian end card, masuk dengan 'swipe' kertas
+    sections = []
+    if ts:
+        sections.append((ts["duration"], lambda t: testimonial_section(paper, ts, t)))
+    sections.append((ec["duration"], lambda t: end_card(paper, ec, t)))
+    for dur, fn in sections:
+        prev = last
+        for k in range(int(dur * FPS)):
+            t = k / FPS
+            f = swipe_in(prev, fn(t), t)
+            disclaimer(f, cfg["disclaimer"])
+            f.alpha_composite(grain[i % len(grain)])
+            enc.stdin.write(f.convert("RGB").tobytes())
+            last = f
+            i += 1
     enc.stdin.close()
     enc.wait()
     dec.wait()
 
     # SFX whoosh pada setiap kemasukan teks
     times = sorted({b["start"] for b in cfg["beats"]} | {n["start"] for n in cfg.get("stickies", [])}
-                   | {l["start"] for l in cfg.get("lists", [])} | {clip_dur})
+                   | {l["start"] for l in cfg.get("lists", [])} | {clip_dur, clip_dur + ts_dur}
+                   | ({clip_dur + 0.6 + j * 0.7 for j in range(len(ts["comments"]))} if ts else set()))
     sfx = out + ".sfx.wav"
     whoosh_track(times, total, sfx)
     subprocess.run(
