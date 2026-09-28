@@ -23,10 +23,14 @@ SANS_B = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 SANS = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 HAND = "/usr/share/fonts/truetype/liberation/LiberationSerif-BoldItalic.ttf"
 
-PAPER = (243, 237, 224)
-INK = (22, 22, 22)
-YELLOW = (255, 221, 0)
-RED = (226, 45, 38)
+# Tema jenama Arbeela: magenta + emas
+PAPER_TOP, PAPER_BOT = (86, 6, 50), (170, 16, 92)  # latar magenta
+INK = (255, 247, 238)       # teks atas latar
+HL_TEXT = (74, 6, 42)       # teks atas highlighter
+MAGENTA = (206, 18, 104)
+INK_CARD = (30, 20, 30)     # teks atas kad putih/kuning
+YELLOW = (255, 206, 38)     # highlighter emas
+RED = (255, 232, 0)         # marker kuning terang
 
 # Kad video
 CARD_W, CARD_H, BORDER = 740, 1316, 14
@@ -66,9 +70,10 @@ def probe_duration(path):
 
 def make_paper(seed=3):
     rng = np.random.default_rng(seed)
-    base = np.ones((H, W, 3)) * np.array(PAPER)
+    ys = np.linspace(0, 1, H)[:, None, None]
+    base = np.repeat(np.array(PAPER_TOP) * (1 - ys) + np.array(PAPER_BOT) * ys, W, axis=1).astype(float)
     low = Image.fromarray((rng.random((48, 27)) * 255).astype(np.uint8)).resize((W, H), Image.BICUBIC)
-    base += (np.asarray(low, float)[..., None] / 255 - 0.5) * 14
+    base += (np.asarray(low, float)[..., None] / 255 - 0.5) * 18
     base += rng.normal(0, 4, (H, W, 1))
     # vignette
     yy, xx = np.mgrid[0:H, 0:W]
@@ -78,7 +83,7 @@ def make_paper(seed=3):
     # garis halus gaya kertas nota
     d2 = ImageDraw.Draw(img)
     for y in range(0, H, 64):
-        d2.line((0, y, W, y), fill=(210, 200, 185, 255), width=1)
+        d2.line((0, y, W, y), fill=(255, 255, 255, 9), width=1)
     return img
 
 
@@ -122,7 +127,7 @@ def kicker(frame, text, t, start, y=150):
     x0 = (W - tw) / 2
     d = ImageDraw.Draw(frame)
     d.line((x0, y + 52, x0 + tw * p, y + 52), fill=RED, width=6)
-    col = INK + (int(255 * p),)
+    col = YELLOW + (int(255 * p),)
     d.text((x0, y), spaced, font=f, fill=col)
 
 
@@ -139,11 +144,14 @@ def headline(frame, lines, t, start, y=215, size=74, hl_idx=None, seed=1):
         tw = f.getlength(ln)
         x = (W - tw) / 2
         yy = y + i * lh + int((1 - p) * 20)
+        col = INK
         if hl_idx is not None and i in (hl_idx if isinstance(hl_idx, (list, tuple)) else [hl_idx]):
             hp = ease((t - st - 0.15) / 0.4)
             if hp > 0:
                 rough_rect(d, (x - 18, yy + size * 0.18, x - 18 + (tw + 36) * hp, yy + size * 1.12), YELLOW + (255,), seed + i)
-        d.text((x, yy), ln, font=f, fill=INK + (int(255 * p),))
+            if hp > 0.5:
+                col = HL_TEXT
+        d.text((x, yy), ln, font=f, fill=col + (int(255 * p),))
 
 
 def sticky(frame, text, t, start, end, cx, cy, rot=4, w=430):
@@ -169,7 +177,7 @@ def sticky(frame, text, t, start, end, cx, cy, rot=4, w=430):
     d.rectangle((16, 16, w + 16, h + 16), fill=(255, 236, 110, 255))
     d.rectangle((w / 2 - 50, 6, w / 2 + 70, 34), fill=(255, 255, 255, 150))  # pita
     for i, ln in enumerate(lines):
-        d.text((46, 44 + i * 56), ln, font=f, fill=INK)
+        d.text((46, 44 + i * 56), ln, font=f, fill=INK_CARD)
     sc = 0.6 + 0.4 * p
     note = note.rotate(rot, expand=True, resample=Image.BICUBIC)
     note = note.resize((int(note.width * sc), int(note.height * sc)), Image.LANCZOS)
@@ -215,7 +223,7 @@ def arrow_label(frame, text, x0, y0, x1, y1, t, start, end):
     if lp > 0:
         bx = min(max(20, x0 - tw / 2), W - tw - 40)
         rough_rect(d, (bx - 14, y0 + 8, bx + tw + 14, y0 + 72), (255, 255, 255, int(235 * lp)), 7)
-        d.text((bx, y0 + 12), text, font=f, fill=RED + (int(255 * lp),))
+        d.text((bx, y0 + 12), text, font=f, fill=MAGENTA + (int(255 * lp),))
 
 
 def stamp(frame, text, cx, cy, t, start, end, rot=-12):
@@ -254,8 +262,8 @@ def strips(frame, items, t, start, end, y0=1180):
         d = ImageDraw.Draw(lyr)
         rough_rect(d, (20, 22, tw + 30, 112), (0, 0, 0, 70), 20 + i)
         rough_rect(d, (10, 10, tw + 20, 100), (252, 250, 244, 255), 30 + i)
-        d.text((34, 20), num, font=fnum, fill=RED)
-        d.text((34 + fnum.getlength(num) + 30, 30), it, font=ftxt, fill=INK)
+        d.text((34, 20), num, font=fnum, fill=MAGENTA)
+        d.text((34 + fnum.getlength(num) + 30, 30), it, font=ftxt, fill=INK_CARD)
         lyr = lyr.rotate((-1.5, 1.2, -0.8)[i % 3], expand=True, resample=Image.BICUBIC)
         lyr.putalpha(lyr.getchannel("A").point(lambda v: int(v * p * fa)))
         x = int(90 + (1 - p) * -300) if i % 2 == 0 else int(W - lyr.width - 90 + (1 - p) * 300)
@@ -343,13 +351,13 @@ def end_card(paper, ec, t):
         bw, bh = (tw + 110) * sc, 130 * sc
         x0, y0 = (W - bw) / 2, 1110 + (1 - p) * 40
         d.rectangle((x0 + 10, y0 + 12, x0 + bw + 10, y0 + bh + 12), fill=(0, 0, 0, int(90 * p)))
-        d.rectangle((x0, y0, x0 + bw, y0 + bh), fill=INK + (int(255 * p),))
-        d.text((x0 + (bw - tw) / 2, y0 + (bh - 70) / 2), ec["button"], font=fb, fill=YELLOW + (int(255 * p),))
+        d.rectangle((x0, y0, x0 + bw, y0 + bh), fill=YELLOW + (int(255 * p),))
+        d.text((x0 + (bw - tw) / 2, y0 + (bh - 70) / 2), ec["button"], font=fb, fill=HL_TEXT + (int(255 * p),))
     np_ = ease((t - 1.5) / 0.3)
     if np_ > 0:
         fn = font(HAND, 48)
         tw = fn.getlength(ec["note"])
-        d.text(((W - tw) / 2, 1300), ec["note"], font=fn, fill=RED + (int(255 * np_),))
+        d.text(((W - tw) / 2, 1300), ec["note"], font=fn, fill=(255, 190, 220) + (int(255 * np_),))
     return f
 
 
@@ -377,7 +385,7 @@ def comment_card(name, text, likes, seed):
     ini = name[0].upper()
     d.text((62 - font(SANS_B, 44).getlength(ini) / 2, 36), ini, font=font(SANS_B, 44), fill=WHITE_T)
     d.rounded_rectangle((122, 16, 122 + bw, 16 + bh), radius=34, fill=(240, 242, 245))
-    d.text((150, 30), name, font=fn, fill=INK)
+    d.text((150, 30), name, font=fn, fill=INK_CARD)
     for i, ln in enumerate(lines):
         d.text((150, 80 + i * 54), ln, font=ft, fill=(40, 40, 40))
     d.text((150, bh + 26), "Suka    Balas", font=fs, fill=(101, 103, 107))
@@ -467,7 +475,7 @@ def disclaimer(frame, text):
     d = ImageDraw.Draw(frame)
     for i, ln in enumerate(lines):
         lw = f.getlength(ln)
-        d.text(((W - lw) / 2, H - 100 + i * 34), ln, font=f, fill=(90, 84, 76, 255))
+        d.text(((W - lw) / 2, H - 100 + i * 34), ln, font=f, fill=(255, 200, 225, 255))
 
 
 # ---------------------------------------------------------------- audio
