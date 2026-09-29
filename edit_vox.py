@@ -455,6 +455,56 @@ def proof_section(paper, pf, t):
     return f
 
 
+def faq_card(q, a, idx):
+    """Kad soalan lazim: nombor, soalan tebal, jawapan ringkas, tanda semak."""
+    cw = 960
+    qs = 56
+    while font(SERIF_B, qs).getlength(q) > cw - 115 - 110:
+        qs -= 2
+    fq, fa, fn = font(SERIF_B, qs), font(SANS, 42), font(SANS_B, 44)
+    words, lines, cur = a.split(), [], ""
+    for wd in words:
+        tr = (cur + " " + wd).strip()
+        if fa.getlength(tr) <= cw - 150 or not cur:
+            cur = tr
+        else:
+            lines.append(cur)
+            cur = wd
+    lines.append(cur)
+    ch = 124 + len(lines) * 54
+    lyr = Image.new("RGBA", (cw + 20, ch + 20), (0, 0, 0, 0))
+    d = ImageDraw.Draw(lyr)
+    rough_rect(d, (14, 16, cw + 14, ch + 16), (0, 0, 0, 80), 40 + idx)
+    rough_rect(d, (0, 0, cw, ch), (252, 250, 244, 255), 50 + idx)
+    d.rectangle((0, 0, 94, 76), fill=MAGENTA)
+    d.text((47 - fn.getlength(f"{idx + 1:02d}") / 2, 13), f"{idx + 1:02d}", font=fn, fill=(255, 255, 255))
+    d.text((115, 16 + (56 - qs) // 2), q, font=fq, fill=INK_CARD)
+    for i, ln in enumerate(lines):
+        d.text((115, 94 + i * 54), ln, font=fa, fill=(60, 55, 50))
+    # tanda semak
+    cx, cy = cw - 60, 48
+    d.ellipse((cx - 32, cy - 32, cx + 32, cy + 32), fill=YELLOW)
+    d.line((cx - 15, cy + 1, cx - 4, cy + 13, cx + 17, cy - 12), fill=HL_TEXT, width=8, joint="curve")
+    return lyr
+
+
+def faq_section(paper, fq, t):
+    f = paper.copy()
+    kicker(f, fq["kicker"], t, 0.0)
+    headline(f, fq["headline"], t, 0.15, hl_idx=fq.get("highlight"), seed=88)
+    y = fq.get("y", 520)
+    for i, it in enumerate(fq["items"]):
+        card = faq_card(it["q"], it["a"], i)
+        p = ease((t - fq.get("first", 0.6) - i * fq.get("gap", 0.9)) / 0.35)
+        if p > 0:
+            lyr = card.rotate((-1.0, 0.8, -0.6, 0.9)[i % 4], expand=True, resample=Image.BICUBIC)
+            lyr.putalpha(lyr.getchannel("A").point(lambda v: int(v * p)))
+            x = (W - lyr.width) // 2 + int((1 - p) * (260 if i % 2 else -260))
+            f.alpha_composite(lyr, (x, y))
+        y += card.height + fq.get("spacing", 40)
+    return f
+
+
 def swipe_in(prev, new, t, dur=0.3):
     if t >= dur or prev is None:
         return new
@@ -514,9 +564,11 @@ def main(cfg_path):
     ec = cfg["end_card"]
     ts = cfg.get("testimonials")
     pf = cfg.get("proof")
+    fq = cfg.get("faq")
+    fq_dur = fq["duration"] if fq else 0.0
     ts_dur = ts["duration"] if ts else 0.0
     pf_dur = pf["duration"] if pf else 0.0
-    total = clip_dur + ts_dur + pf_dur + ec["duration"]
+    total = clip_dur + ts_dur + pf_dur + fq_dur + ec["duration"]
 
     paper = make_paper()
     grain = make_grain()
@@ -560,6 +612,8 @@ def main(cfg_path):
         sections.append((ts["duration"], lambda t: testimonial_section(paper, ts, t)))
     if pf:
         sections.append((pf["duration"], lambda t: proof_section(paper, pf, t)))
+    if fq:
+        sections.append((fq["duration"], lambda t: faq_section(paper, fq, t)))
     sections.append((ec["duration"], lambda t: end_card(paper, ec, t)))
     for dur, fn in sections:
         prev = last
@@ -577,7 +631,9 @@ def main(cfg_path):
 
     # SFX whoosh pada setiap kemasukan teks
     times = sorted({b["start"] for b in cfg["beats"]} | {n["start"] for n in cfg.get("stickies", [])}
-                   | {l["start"] for l in cfg.get("lists", [])} | {clip_dur, clip_dur + ts_dur, clip_dur + ts_dur + pf_dur}
+                   | {l["start"] for l in cfg.get("lists", [])} | {clip_dur, clip_dur + ts_dur, clip_dur + ts_dur + pf_dur, clip_dur + ts_dur + pf_dur + fq_dur}
+                   | ({clip_dur + ts_dur + pf_dur + fq.get("first", 0.6) + j * fq.get("gap", 0.9)
+                       for j in range(len(fq["items"]))} if fq else set())
                    | ({clip_dur + ts_dur + n["start"] for n in pf.get("notes", [])} if pf else set())
                    | ({clip_dur + 0.6 + j * 0.7 for j in range(len(ts["comments"]))} if ts else set()))
     sfx = out + ".sfx.wav"

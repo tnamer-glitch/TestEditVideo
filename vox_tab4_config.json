@@ -3,43 +3,90 @@
   "output": "output/tab4-turbo-vox.mp4",
   "mirror": false,
   "theme": {
-    "paper_top": [12, 10, 8],
-    "paper_bot": [52, 38, 12],
-    "ink": [255, 246, 225],
-    "hl_text": [22, 14, 2],
-    "magenta": [176, 112, 8],
-    "yellow": [236, 176, 32],
-    "red": [255, 226, 70],
-    "note": [255, 214, 120]
+    "paper_top": [
+      12,
+      10,
+      8
+    ],
+    "paper_bot": [
+      52,
+      38,
+      12
+    ],
+    "ink": [
+      255,
+      246,
+      225
+    ],
+    "hl_text": [
+      22,
+      14,
+      2
+    ],
+    "magenta": [
+      176,
+      112,
+      8
+    ],
+    "yellow": [
+      236,
+      176,
+      32
+    ],
+    "red": [
+      255,
+      226,
+      70
+    ],
+    "note": [
+      255,
+      214,
+      120
+    ]
   },
   "beats": [
     {
       "start": 0.0,
       "end": 4.4,
       "kicker": "Masalahnya",
-      "headline": ["Tenaga cepat habis,", "stamina merosot?"],
+      "headline": [
+        "Tenaga cepat habis,",
+        "stamina merosot?"
+      ],
       "highlight": 1
     },
     {
       "start": 4.4,
       "end": 9.0,
       "kicker": "Jawapannya",
-      "headline": ["Kenalkan", "TAB4 Turbo"],
+      "headline": [
+        "Kenalkan",
+        "TAB4 Turbo"
+      ],
       "highlight": 1
     },
     {
       "start": 9.0,
       "end": 12.6,
       "kicker": "Khasiatnya",
-      "headline": ["Satu sachet,", "tenaga ekstra"],
+      "headline": [
+        "Satu sachet,",
+        "tenaga ekstra"
+      ],
       "highlight": 1
     },
     {
       "start": 12.6,
       "end": 15.0,
       "kicker": "Rahsianya",
-      "headline": ["Lebih kuat,", "lebih lama!"],
-      "highlight": [0, 1]
+      "headline": [
+        "Lebih kuat,",
+        "lebih lama!"
+      ],
+      "highlight": [
+        0,
+        1
+      ]
     }
   ],
   "stickies": [
@@ -53,10 +100,23 @@
     }
   ],
   "zooms": [
-    {"start": 7.6, "end": 8.9, "zoom": 1.3, "x": 0.4, "y": 0.75}
+    {
+      "start": 7.6,
+      "end": 8.9,
+      "zoom": 1.3,
+      "x": 0.4,
+      "y": 0.75
+    }
   ],
   "circles": [
-    {"x": 0.33, "y": 0.64, "rx": 180, "ry": 280, "start": 7.8, "end": 8.9}
+    {
+      "x": 0.33,
+      "y": 0.64,
+      "rx": 180,
+      "ry": 280,
+      "start": 7.8,
+      "end": 8.9
+    }
   ],
   "arrows": [
     {
@@ -70,22 +130,72 @@
     }
   ],
   "stamps": [
-    {"text": "KHUSUS LELAKI", "x": 790, "y": 620, "start": 5.9, "end": 7.4},
-    {"text": "FORMULA TURBO", "x": 790, "y": 620, "start": 13.2, "end": 15.0}
+    {
+      "text": "KHUSUS LELAKI",
+      "x": 790,
+      "y": 620,
+      "start": 5.9,
+      "end": 7.4
+    },
+    {
+      "text": "FORMULA TURBO",
+      "x": 790,
+      "y": 620,
+      "start": 13.2,
+      "end": 15.0
+    }
   ],
   "lists": [
     {
-      "items": ["Tenaga ekstra", "Tahan lebih lama", "Stamina kekal padu", "Keyakinan diri"],
+      "items": [
+        "Tenaga ekstra",
+        "Tahan lebih lama",
+        "Stamina kekal padu",
+        "Keyakinan diri"
+      ],
       "start": 9.3,
       "end": 12.6,
       "y": 1110
     }
   ],
+  "faq": {
+    "duration": 6.5,
+    "kicker": "Soalan lazim",
+    "headline": [
+      "Selamat ke",
+      "TAB4 Turbo?"
+    ],
+    "highlight": 1,
+    "y": 520,
+    "first": 0.6,
+    "gap": 1.1,
+    "items": [
+      {
+        "q": "Sama macam ubat kuat?",
+        "a": "Tidak. TAB4 Turbo ialah suplemen, bukan ubat."
+      },
+      {
+        "q": "Selamat untuk buah pinggang?",
+        "a": "Ambil ikut dos disarankan. Ada masalah buah pinggang atau jantung? Rujuk doktor dulu."
+      },
+      {
+        "q": "Perlu makan selamanya?",
+        "a": "Tidak. Dos boleh dikurangkan atau dihentikan secara berperingkat."
+      },
+      {
+        "q": "Ada kesan sampingan?",
+        "a": "Ikut dos disarankan. Hentikan jika rasa tidak selesa."
+      }
+    ]
+  },
   "end_card": {
     "duration": 3.0,
     "kicker": "Khusus untuk lelaki",
     "product_name": "TAB4 Turbo",
-    "lines": ["Kuasa lelaki,", "keyakinan sejati!"],
+    "lines": [
+      "Kuasa lelaki,",
+      "keyakinan sejati!"
+    ],
     "button": "DAPATKAN SEKARANG",
     "note": "Lebih kuat, lebih lama!"
   },
