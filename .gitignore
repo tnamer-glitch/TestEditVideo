@@ -2,3 +2,5 @@ output/*.png
 __pycache__/
 output/*.video.mp4
 output/*.sfx.wav
+models/
+output/*.vo.wav

@@ -1,0 +1,42 @@
+{
+  "input": "input/tab4-turbo-2.mp4",
+  "output": "output/tab4-turbo-2-suara.mp4",
+  "model": "models/vits-piper-id_ID-news_tts-medium",
+  "speed": 1.0,
+  "original_volume": 0.3,
+  "lines": [
+    {
+      "start": 0.4,
+      "text": "Abang-abang, balik kerja je terus rasa penat? Tenaga tak macam dulu?"
+    },
+    {
+      "start": 5.0,
+      "text": "Kenalkan, Tab Empat Turbo. Formula turbo, khas untuk lelaki."
+    },
+    {
+      "start": 10.2,
+      "text": "Lebih kuat, lebih lama!"
+    },
+    {
+      "start": 13.0,
+      "text": "Bantu beri tenaga ekstra, stamina kekal padu, dan keyakinan diri."
+    },
+    {
+      "start": 20.0,
+      "text": "Cara ambil pun senang. Koyak satu sachet sehari."
+    },
+    {
+      "start": 24.5,
+      "text": "Sesuai untuk lelaki yang sibuk."
+    },
+    {
+      "start": 28.6,
+      "text": "Terus minum!"
+    },
+    {
+      "start": 31.0,
+      "end": 36.0,
+      "text": "Tab Empat Turbo, kuasa lelaki. Dapatkan sekarang!"
+    }
+  ]
+}
