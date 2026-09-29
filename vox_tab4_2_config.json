@@ -1,0 +1,211 @@
+{
+  "input": "output/tab4-turbo-2-suara.mp4",
+  "output": "output/tab4-turbo-2-vox.mp4",
+  "mirror": false,
+  "theme": {
+    "paper_top": [
+      12,
+      10,
+      8
+    ],
+    "paper_bot": [
+      52,
+      38,
+      12
+    ],
+    "ink": [
+      255,
+      246,
+      225
+    ],
+    "hl_text": [
+      22,
+      14,
+      2
+    ],
+    "magenta": [
+      176,
+      112,
+      8
+    ],
+    "yellow": [
+      236,
+      176,
+      32
+    ],
+    "red": [
+      255,
+      226,
+      70
+    ],
+    "note": [
+      255,
+      214,
+      120
+    ]
+  },
+  "beats": [
+    {
+      "start": 0.0,
+      "end": 4.8,
+      "kicker": "Masalahnya",
+      "headline": [
+        "Balik kerja",
+        "terus penat?"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 4.8,
+      "end": 10.1,
+      "kicker": "Jawapannya",
+      "headline": [
+        "Kenalkan",
+        "TAB4 Turbo"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 10.1,
+      "end": 12.8,
+      "kicker": "Rahsianya",
+      "headline": [
+        "Lebih kuat,",
+        "lebih lama!"
+      ],
+      "highlight": [
+        0,
+        1
+      ]
+    },
+    {
+      "start": 12.8,
+      "end": 19.8,
+      "kicker": "Khasiatnya",
+      "headline": [
+        "Satu sachet,",
+        "tenaga ekstra"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 19.8,
+      "end": 28.4,
+      "kicker": "Cara ambil",
+      "headline": [
+        "Koyak satu",
+        "sachet sehari"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 28.4,
+      "end": 31.0,
+      "kicker": "Langkah akhir",
+      "headline": [
+        "Terus",
+        "minum!"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 31.0,
+      "end": 36.2,
+      "kicker": "TAB4 Turbo",
+      "headline": [
+        "Kuasa lelaki,",
+        "keyakinan sejati"
+      ],
+      "highlight": 1
+    }
+  ],
+  "stickies": [
+    {
+      "text": "Tenaga tak macam dulu.",
+      "start": 2.0,
+      "end": 4.8,
+      "x": 330,
+      "y": 1440,
+      "rot": 5
+    },
+    {
+      "text": "Sesuai untuk lelaki yang sibuk.",
+      "start": 24.5,
+      "end": 28.4,
+      "x": 760,
+      "y": 1440,
+      "rot": -4
+    }
+  ],
+  "zooms": [
+    {
+      "start": 10.3,
+      "end": 12.6,
+      "zoom": 1.2,
+      "x": 0.45,
+      "y": 0.7
+    }
+  ],
+  "circles": [
+    {
+      "x": 0.36,
+      "y": 0.62,
+      "rx": 190,
+      "ry": 260,
+      "start": 10.6,
+      "end": 12.6
+    }
+  ],
+  "arrows": [
+    {
+      "text": "1 sachet sehari",
+      "from_x": 260,
+      "from_y": 1560,
+      "to_x": 0.48,
+      "to_y": 0.52,
+      "start": 20.3,
+      "end": 23.2
+    }
+  ],
+  "stamps": [
+    {
+      "text": "KHUSUS LELAKI",
+      "x": 790,
+      "y": 620,
+      "start": 5.6,
+      "end": 8.5
+    },
+    {
+      "text": "DAPATKAN SEKARANG",
+      "x": 760,
+      "y": 640,
+      "start": 32.5,
+      "end": 36.2
+    }
+  ],
+  "lists": [
+    {
+      "items": [
+        "Tenaga ekstra",
+        "Tahan lebih lama",
+        "Stamina kekal padu",
+        "Keyakinan diri"
+      ],
+      "start": 13.1,
+      "end": 19.8,
+      "y": 1110
+    }
+  ],
+  "end_card": {
+    "duration": 3.0,
+    "kicker": "Khusus untuk lelaki",
+    "product_name": "TAB4 Turbo",
+    "lines": [
+      "Kuasa lelaki,",
+      "keyakinan sejati!"
+    ],
+    "button": "DAPATKAN SEKARANG",
+    "note": "Lebih kuat, lebih lama!"
+  },
+  "disclaimer": "*Suplemen, bukan ubat. Keputusan berbeza mengikut individu. Rujuk doktor jika ada masalah kesihatan."
+}
