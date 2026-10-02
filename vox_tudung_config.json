@@ -3,70 +3,126 @@
   "output": "output/tudung-vox.mp4",
   "mirror": false,
   "theme": {
-    "paper_top": [10, 22, 52],
-    "paper_bot": [28, 48, 96],
-    "ink": [250, 247, 238],
-    "hl_text": [14, 26, 60],
-    "magenta": [28, 48, 110],
-    "yellow": [255, 214, 60],
-    "red": [255, 120, 96],
-    "soft": [200, 215, 245]
+    "paper_top": [
+      10,
+      22,
+      52
+    ],
+    "paper_bot": [
+      28,
+      48,
+      96
+    ],
+    "ink": [
+      250,
+      247,
+      238
+    ],
+    "hl_text": [
+      14,
+      26,
+      60
+    ],
+    "magenta": [
+      28,
+      48,
+      110
+    ],
+    "yellow": [
+      255,
+      214,
+      60
+    ],
+    "red": [
+      255,
+      120,
+      96
+    ],
+    "soft": [
+      200,
+      215,
+      245
+    ]
   },
   "beats": [
     {
       "start": 0.0,
       "end": 4.4,
       "kicker": "Koleksi baru",
-      "headline": ["Tudung bawal", "sulam manik"],
+      "headline": [
+        "Tudung bawal",
+        "sulam manik!"
+      ],
       "highlight": 1
     },
     {
       "start": 4.4,
       "end": 8.2,
       "kicker": "Lihat coraknya",
-      "headline": ["Corak jaring", "penuh manik"],
+      "headline": [
+        "Corak jaring",
+        "penuh manik"
+      ],
       "highlight": 1
     },
     {
       "start": 8.2,
       "end": 12.0,
       "kicker": "Bila dipakai",
-      "headline": ["Jatuh cantik", "& nampak mewah"],
+      "headline": [
+        "Jatuh cantik",
+        "& nampak mewah"
+      ],
       "highlight": 1
     },
     {
       "start": 12.0,
       "end": 16.2,
       "kicker": "Dari dekat",
-      "headline": ["Setiap manik", "dijahit kemas"],
+      "headline": [
+        "Setiap manik",
+        "dijahit kemas"
+      ],
       "highlight": 1
     },
     {
       "start": 16.2,
       "end": 20.3,
       "kicker": "Gayanya",
-      "headline": ["Sesuai ke majlis,", "kerja & raya"],
+      "headline": [
+        "Kerja, majlis,",
+        "raya pun boleh!"
+      ],
       "highlight": 1
     },
     {
       "start": 20.3,
       "end": 24.2,
       "kicker": "Pilihan warna",
-      "headline": ["Ada juga", "warna hitam"],
+      "headline": [
+        "Ada juga",
+        "warna hitam"
+      ],
       "highlight": 1
     },
     {
       "start": 24.2,
       "end": 31.0,
       "kicker": "Pilihan warna",
-      "headline": ["Dan kelabu", "lembut"],
+      "headline": [
+        "Dan kelabu",
+        "lembut"
+      ],
       "highlight": 1
     },
     {
       "start": 31.0,
       "end": 34.6,
       "kicker": "Jangan tunggu",
-      "headline": ["Pilih warna", "kegemaran awak"],
+      "headline": [
+        "Pilih warna",
+        "kegemaran awak"
+      ],
       "highlight": 1
     }
   ],
@@ -110,28 +166,65 @@
       "end": 24.2
     }
   ],
-  "stamps": [
-    {
-      "text": "DETAIL MANIK",
-      "x": 760,
-      "y": 1450,
-      "start": 12.8,
-      "end": 16.2
-    },
-    {
-      "text": "3 WARNA",
-      "x": 780,
-      "y": 560,
-      "start": 24.8,
-      "end": 31.0
-    }
-  ],
+  "stamps": [],
   "end_card": {
     "duration": 3.5,
     "kicker": "Tudung bawal sulam manik",
     "product_name": "NAMA JENAMA",
-    "lines": ["Cantik, kemas,", "nampak mewah."],
+    "lines": [
+      "Cantik, kemas,",
+      "nampak mewah."
+    ],
     "button": "PM UNTUK ORDER",
     "note": "Navy • Hitam • Kelabu"
-  }
+  },
+  "speed": 1.15,
+  "pop": true,
+  "punch": true,
+  "headline_size": 84,
+  "voice_boost": true,
+  "voice_lufs": -11,
+  "music": {
+    "bpm": 124,
+    "volume": 0.3,
+    "impacts": [
+      0.0,
+      12.0,
+      24.2
+    ]
+  },
+  "banners": [
+    {
+      "text": "WAJIB TENGOK!",
+      "start": 0.0,
+      "end": 2.0,
+      "y": 1450,
+      "rot": -5,
+      "size": 104
+    },
+    {
+      "text": "MANIK PENUH!",
+      "start": 12.2,
+      "end": 14.4,
+      "y": 1520,
+      "rot": 4,
+      "size": 96
+    },
+    {
+      "text": "3 WARNA!",
+      "start": 24.4,
+      "end": 26.4,
+      "y": 1480,
+      "rot": -4,
+      "size": 110
+    },
+    {
+      "text": "PM SEKARANG!",
+      "start": 31.6,
+      "end": 34.6,
+      "y": 1520,
+      "rot": -3,
+      "size": 100
+    }
+  ]
 }

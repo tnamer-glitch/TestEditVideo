@@ -139,22 +139,35 @@ def kicker(frame, text, t, start, y=150):
     d.text((x0, y), spaced, font=f, fill=col)
 
 
+def ease_back(x, k=2.2):
+    """Ease dengan 'overshoot' (melantun sedikit melepasi 1)."""
+    x = clamp(x) - 1
+    return 1 + (k + 1) * x ** 3 + k * x ** 2
+
+
+POP = False  # tajuk 'pop' dengan lantunan (hidupkan dari config)
+
+
 def headline(frame, lines, t, start, y=215, size=74, hl_idx=None, seed=1):
     """Tajuk serif; baris hl_idx dapat sapuan highlighter animasi."""
-    f = font(SERIF_B, size)
+    base_size = size
     d = ImageDraw.Draw(frame)
     lh = int(size * 1.25)
     for i, ln in enumerate(lines):
-        st = start + i * 0.25
+        st = start + i * (0.12 if POP else 0.25)
         p = ease((t - st) / 0.35)
         if p <= 0:
             continue
+        size = base_size
+        if POP:
+            size = max(8, int(base_size * (0.55 + 0.45 * ease_back((t - st) / 0.3))))
+        f = font(SERIF_B, size)
         tw = f.getlength(ln)
         x = (W - tw) / 2
-        yy = y + i * lh + int((1 - p) * 20)
+        yy = y + i * lh + (int((base_size - size) * 0.6) if POP else int((1 - p) * 20))
         col = INK
         if hl_idx is not None and i in (hl_idx if isinstance(hl_idx, (list, tuple)) else [hl_idx]):
-            hp = ease((t - st - 0.15) / 0.4)
+            hp = ease((t - st) / 0.2) if POP else ease((t - st - 0.15) / 0.4)
             if hp > 0:
                 rough_rect(d, (x - 18, yy + size * 0.18, x - 18 + (tw + 36) * hp, yy + size * 1.12), YELLOW + (255,), seed + i)
             if hp > 0.5:
@@ -254,6 +267,31 @@ def stamp(frame, text, cx, cy, t, start, end, rot=-12):
     frame.alpha_composite(lyr, (int(cx - lyr.width / 2), int(cy - lyr.height / 2)))
 
 
+def banner(frame, text, t, start, end, cy, rot=-4, size=96):
+    """Jalur kuning besar condong dengan teks tebal, masuk dengan lantunan."""
+    if not (start <= t < end):
+        return
+    p = ease_back((t - start) / 0.3)
+    if p <= 0:
+        return
+    f = font(SANS_B, size)
+    tw = int(f.getlength(text))
+    bw, bh = tw + 110, int(size * 1.6)
+    lyr = Image.new("RGBA", (bw + 30, bh + 30), (0, 0, 0, 0))
+    d = ImageDraw.Draw(lyr)
+    d.rectangle((22, 24, bw + 22, bh + 24), fill=(0, 0, 0, 110))
+    rough_rect(d, (0, 0, bw, bh), YELLOW + (255,), int(start * 10))
+    d.text((55, (bh - size * 1.18) / 2), text, font=f, fill=HL_TEXT + (255,))
+    lyr = lyr.rotate(rot, expand=True, resample=Image.BICUBIC)
+    sc = max(0.05, p)
+    if sc != 1:
+        lyr = lyr.resize((max(1, int(lyr.width * sc)), max(1, int(lyr.height * sc))), Image.BILINEAR)
+    a = clamp((end - t) / 0.15)
+    if a < 1:
+        lyr.putalpha(lyr.getchannel("A").point(lambda v: int(v * a)))
+    frame.alpha_composite(lyr, (int(W / 2 - lyr.width / 2), int(cy - lyr.height / 2)))
+
+
 def strips(frame, items, t, start, end, y0=1180):
     """Senarai bernombor atas jalur kertas koyak."""
     if not (start <= t < end):
@@ -326,7 +364,8 @@ def draw_beats(frame, cfg, t):
         # kicker & headline pudar keluar hujung babak
         layer = Image.new("RGBA", frame.size, (0, 0, 0, 0))
         kicker(layer, b["kicker"], t, b["start"])
-        headline(layer, b["headline"], t, b["start"] + 0.15, hl_idx=b.get("highlight"), seed=int(b["start"] * 10))
+        headline(layer, b["headline"], t, b["start"] + 0.15, size=cfg.get("headline_size", 74),
+                 hl_idx=b.get("highlight"), seed=int(b["start"] * 10))
         fo = clamp((b["end"] - t) / 0.2)
         if fo < 1:
             layer.putalpha(layer.getchannel("A").point(lambda v: int(v * fo)))
@@ -343,6 +382,8 @@ def draw_beats(frame, cfg, t):
         stamp(frame, s["text"], s["x"], s["y"], t, s["start"], s["end"])
     for l in cfg.get("lists", []):
         strips(frame, l["items"], t, l["start"], l["end"], l.get("y", 1180))
+    for bn in cfg.get("banners", []):
+        banner(frame, bn["text"], t, bn["start"], bn["end"], bn.get("y", 1500), bn.get("rot", -4), bn.get("size", 96))
 
 
 def end_card(paper, ec, t):
@@ -508,14 +549,82 @@ def whoosh_track(times, total, path, sr=44100):
         wf.writeframes(pcm.tobytes())
 
 
+def write_wav(path, out, sr=44100):
+    pcm = (np.clip(out, -1, 1) * 32767).astype(np.int16)
+    with wave.open(path, "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(sr)
+        wf.writeframes(pcm.tobytes())
+
+
+def music_track(total, path, bpm=124, impacts=(), sr=44100):
+    """Rentak latar ringkas (kick, clap, hi-hat, bass) + bunyi 'boom' pada impacts."""
+    rng = np.random.default_rng(11)
+    n = int(total * sr) + sr
+    out = np.zeros(n)
+    beat = 60 / bpm
+
+    def add(sig, at, gain):
+        s0 = int(at * sr)
+        if s0 >= n:
+            return
+        e = min(n, s0 + len(sig))
+        out[s0:e] += sig[:e - s0] * gain
+
+    tk = np.arange(int(0.35 * sr)) / sr
+    kick = np.sin(2 * math.pi * (45 * tk + 90 * (1 - np.exp(-tk * 30)) / 30)) * np.exp(-tk * 9)
+    tc = np.arange(int(0.18 * sr)) / sr
+    clap = rng.normal(0, 1, len(tc))
+    clap = (clap - np.convolve(clap, np.ones(8) / 8, "same")) * np.exp(-tc * 28)
+    th = np.arange(int(0.05 * sr)) / sr
+    hat = rng.normal(0, 1, len(th))
+    hat = (hat - np.convolve(hat, np.ones(3) / 3, "same")) * np.exp(-th * 90)
+    roots = [55.0, 55.0, 43.65, 49.0]  # A, A, F, G
+    tb = np.arange(int(beat * 0.9 * sr)) / sr
+    k = 0
+    while k * beat < total:
+        at = k * beat
+        add(kick, at, 0.9)
+        if k % 2 == 1:
+            add(clap, at, 0.35)
+        add(hat, at + beat / 2, 0.18)
+        f0 = roots[(k // 8) % 4]
+        bass = np.sign(np.sin(2 * math.pi * f0 * tb)) * np.exp(-tb * 5)
+        add(np.convolve(bass, np.ones(40) / 40, "same"), at + beat / 2, 0.22)
+        k += 1
+    ti = np.arange(int(1.2 * sr)) / sr
+    boom = np.sin(2 * math.pi * (38 * ti + 80 * (1 - np.exp(-ti * 6)) / 6)) * np.exp(-ti * 3.5)
+    boom += rng.normal(0, 1, len(ti)) * np.exp(-ti * 25) * 0.3
+    for at in impacts:
+        add(boom, at, 0.9)
+    fade = int(0.6 * sr)
+    end = int(total * sr)
+    out[end - fade:end] *= np.linspace(1, 0, fade)
+    out[end:] = 0
+    write_wav(path, out / max(1e-6, np.abs(out).max()) * 0.9, sr)
+
+
+def punch(t, starts, dur=0.28):
+    """Pulangkan (skala kad, kuat kilat putih) untuk 'punch' pada mula babak."""
+    for s0 in starts:
+        if 0 <= t - s0 < dur:
+            x = (t - s0) / dur
+            return 1 + 0.07 * (1 - ease(x)), max(0.0, 1 - x * 3.5)
+    return 1.0, 0.0
+
+
 # ---------------------------------------------------------------- main
 def main(cfg_path):
     with open(cfg_path, encoding="utf-8") as fh:
         cfg = json.load(fh)
     apply_theme(cfg.get("theme"))
+    global POP
+    POP = cfg.get("pop", False)
+    speed = cfg.get("speed", 1.0)
     src, out = cfg["input"], cfg["output"]
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
-    clip_dur = probe_duration(src)
+    clip_dur = probe_duration(src) / speed
     ec = cfg["end_card"]
     ts = cfg.get("testimonials")
     pf = cfg.get("proof")
@@ -527,7 +636,7 @@ def main(cfg_path):
     grain = make_grain()
     shadow = card_shadow()
 
-    vf = ("hflip," if cfg.get("mirror") else "") + f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}"
+    vf = ("hflip," if cfg.get("mirror") else "") + (f"setpts=PTS/{speed}," if speed != 1 else "") + f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}"
     dec = subprocess.Popen([FF, "-loglevel", "error", "-i", src, "-vf", vf, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
                            stdout=subprocess.PIPE)
     tmp_video = out + ".video.mp4"
@@ -541,16 +650,22 @@ def main(cfg_path):
         raw = dec.stdout.read(fsize)
         if len(raw) < fsize:
             break
-        t = i / FPS
+        t = i / FPS * speed  # masa dalam klip asal (config guna masa ini)
         src_img = Image.frombytes("RGB", (W, H), raw)
         frame = paper.copy()
         card = card_frame(src_img, t, cfg.get("zooms", []))
         # kad masuk dengan sedikit 'drop' pada awal
         p = ease(t / 0.4)
         oy = int((1 - p) * 120)
+        sc, flash = punch(t, [b["start"] for b in cfg["beats"]]) if cfg.get("punch") else (1.0, 0.0)
+        if sc != 1:
+            card = card.resize((int(card.width * sc), int(card.height * sc)), Image.BILINEAR)
+            oy += int(math.sin(t * 90) * 10 * (sc - 1) / 0.07)
         frame.alpha_composite(shadow, (CARD_CX - shadow.width // 2 + 6, CARD_CY - shadow.height // 2 + 10 + oy))
         frame.alpha_composite(card, (CARD_CX - card.width // 2, CARD_CY - card.height // 2 + oy))
         draw_beats(frame, cfg, t)
+        if flash > 0:
+            frame.alpha_composite(Image.new("RGBA", (W, H), (255, 255, 255, int(150 * flash))))
         if cfg.get("disclaimer"):
             disclaimer(frame, cfg["disclaimer"])
         frame.alpha_composite(grain[i % len(grain)])
@@ -583,25 +698,44 @@ def main(cfg_path):
     dec.wait()
 
     # SFX whoosh pada setiap kemasukan teks
-    times = sorted({b["start"] for b in cfg["beats"]} | {n["start"] for n in cfg.get("stickies", [])}
-                   | {l["start"] for l in cfg.get("lists", [])} | {clip_dur, clip_dur + ts_dur, clip_dur + ts_dur + pf_dur}
+    times = sorted({x / speed for x in {b["start"] for b in cfg["beats"]} | {n["start"] for n in cfg.get("stickies", [])}
+                    | {l["start"] for l in cfg.get("lists", [])} | {bn["start"] for bn in cfg.get("banners", [])}}
+                   | {clip_dur, clip_dur + ts_dur, clip_dur + ts_dur + pf_dur}
                    | ({clip_dur + ts_dur + n["start"] for n in pf.get("notes", [])} if pf else set())
                    | ({clip_dur + 0.6 + j * 0.7 for j in range(len(ts["comments"]))} if ts else set()))
     sfx = out + ".sfx.wav"
     # senyapkan perkataan tertentu dalam suara asal, cth. [[14.06, 14.52]]
     mute_f = "".join(f"volume=0:enable='between(t,{m0},{m1})'," for m0, m1 in cfg.get("mute", []))
     whoosh_track(times, total, sfx)
+    tempo = f"atempo={speed}," if speed != 1 else ""
+    inputs = ["-i", tmp_video, "-i", src, "-i", sfx]
+    # suara: compressor (lebih padat) + loudnorm ke sasaran LUFS dari config
+    comp = "acompressor=threshold=0.08:ratio=4:attack=5:release=120:makeup=2," if cfg.get("voice_boost") else ""
+    lufs = cfg.get("voice_lufs", -14)
+    graph = (f"[1:a]{mute_f}{tempo}highpass=f=80,{comp}loudnorm=I={lufs}:TP=-1.0:LRA=7,aresample=44100,afade=t=out:st={clip_dur - 0.4}:d=0.4,"
+             f"apad=whole_dur={total:.3f}[v];[2:a]aresample=44100,volume=0.5[s];")
+    mus = cfg.get("music")
+    if mus:
+        mpath = out + ".music.wav"
+        impacts = [x / speed for x in mus.get("impacts", [])] + [clip_dur]
+        music_track(total, mpath, mus.get("bpm", 124), impacts)
+        inputs += ["-i", mpath]
+        # muzik 'duck' (perlahan) bila ada suara
+        graph += (f"[v]asplit=2[v1][vk];[3:a]aresample=44100,volume={mus.get('volume', 0.35)}[m0];"
+                  f"[m0][vk]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=300[m];"
+                  f"[v1][s][m]amix=inputs=3:duration=first:normalize=0,alimiter=limit=0.95[a]")
+    else:
+        graph += "[v][s]amix=inputs=2:duration=first:normalize=0[a]"
     subprocess.run(
-        [FF, "-y", "-loglevel", "error", "-i", tmp_video, "-i", src, "-i", sfx,
-         "-filter_complex",
-         f"[1:a]{mute_f}loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100,afade=t=out:st={clip_dur - 0.4}:d=0.4,"
-         f"apad=whole_dur={total:.3f}[v];[2:a]aresample=44100,volume=0.5[s];"
-         f"[v][s]amix=inputs=2:duration=first:normalize=0[a]",
+        [FF, "-y", "-loglevel", "error", *inputs,
+         "-filter_complex", graph,
          "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
          "-t", f"{total:.3f}", "-movflags", "+faststart", out],
         check=True)
     os.remove(tmp_video)
     os.remove(sfx)
+    if mus:
+        os.remove(mpath)
     print(f"\nSiap: {out} ({total:.1f}s)")
 
 
