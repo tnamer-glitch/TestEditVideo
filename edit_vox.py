@@ -390,7 +390,7 @@ def end_card(paper, ec, t):
     f = paper.copy()
     d = ImageDraw.Draw(f)
     kicker(f, ec["kicker"], t, 0.0, y=560)
-    headline(f, [ec["product_name"]], t, 0.1, y=640, size=110)
+    headline(f, [ec["product_name"]], t, 0.1, y=640, size=ec.get("name_size", 110))
     headline(f, ec["lines"], t, 0.5, y=830, size=66, hl_idx=len(ec["lines"]) - 1, seed=77)
     p = ease((t - 1.1) / 0.3)
     if p > 0:

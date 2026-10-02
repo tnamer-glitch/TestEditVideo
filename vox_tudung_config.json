@@ -48,10 +48,10 @@
     {
       "start": 0.0,
       "end": 4.4,
-      "kicker": "Koleksi baru",
+      "kicker": "Ameyra Exclusive",
       "headline": [
         "Tudung bawal",
-        "sulam manik!"
+        "bertatah batu!"
       ],
       "highlight": 1
     },
@@ -61,7 +61,7 @@
       "kicker": "Lihat coraknya",
       "headline": [
         "Corak jaring",
-        "penuh manik"
+        "penuh batu"
       ],
       "highlight": 1
     },
@@ -80,8 +80,8 @@
       "end": 16.2,
       "kicker": "Dari dekat",
       "headline": [
-        "Setiap manik",
-        "dijahit kemas"
+        "Batu berkilau,",
+        "cantik dari dekat"
       ],
       "highlight": 1
     },
@@ -100,35 +100,35 @@
       "end": 24.2,
       "kicker": "Pilihan warna",
       "headline": [
-        "Ada juga",
-        "warna hitam"
+        "Bermacam",
+        "pilihan warna"
       ],
       "highlight": 1
     },
     {
       "start": 24.2,
       "end": 31.0,
-      "kicker": "Pilihan warna",
+      "kicker": "Pilihan design",
       "headline": [
-        "Dan kelabu",
-        "lembut"
+        "Pelbagai",
+        "design batu"
       ],
       "highlight": 1
     },
     {
       "start": 31.0,
       "end": 34.6,
-      "kicker": "Jangan tunggu",
+      "kicker": "Ameyra Exclusive",
       "headline": [
-        "Pilih warna",
-        "kegemaran awak"
+        "Klik sekarang,",
+        "ORDER NOW!"
       ],
       "highlight": 1
     }
   ],
   "stickies": [
     {
-      "text": "Navy, hitam & kelabu. Mana satu pilihan awak?",
+      "text": "Navy, hitam, kelabu & banyak lagi warna!",
       "start": 26.0,
       "end": 31.0,
       "x": 760,
@@ -169,14 +169,15 @@
   "stamps": [],
   "end_card": {
     "duration": 3.5,
-    "kicker": "Tudung bawal sulam manik",
-    "product_name": "NAMA JENAMA",
+    "kicker": "Tudung bawal bertatah batu",
+    "product_name": "AMEYRA EXCLUSIVE",
     "lines": [
-      "Cantik, kemas,",
-      "nampak mewah."
+      "Pelbagai design batu,",
+      "bermacam pilihan warna."
     ],
-    "button": "PM UNTUK ORDER",
-    "note": "Navy • Hitam • Kelabu"
+    "button": "ORDER NOW",
+    "note": "Klik & order sekarang!",
+    "name_size": 80
   },
   "speed": 1.15,
   "pop": true,
@@ -200,10 +201,10 @@
       "end": 2.0,
       "y": 1450,
       "rot": -5,
-      "size": 104
+      "size": 92
     },
     {
-      "text": "MANIK PENUH!",
+      "text": "PENUH BATU!",
       "start": 12.2,
       "end": 14.4,
       "y": 1520,
@@ -211,20 +212,20 @@
       "size": 96
     },
     {
-      "text": "3 WARNA!",
+      "text": "BANYAK WARNA!",
       "start": 24.4,
       "end": 26.4,
       "y": 1480,
       "rot": -4,
-      "size": 110
+      "size": 84
     },
     {
-      "text": "PM SEKARANG!",
+      "text": "KLIK ORDER NOW!",
       "start": 31.6,
       "end": 34.6,
       "y": 1520,
       "rot": -3,
-      "size": 100
+      "size": 80
     }
   ]
 }
