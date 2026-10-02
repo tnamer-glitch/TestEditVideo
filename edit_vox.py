@@ -31,6 +31,14 @@ MAGENTA = (206, 18, 104)
 INK_CARD = (30, 20, 30)     # teks atas kad putih/kuning
 YELLOW = (255, 206, 38)     # highlighter emas
 RED = (255, 232, 0)         # marker kuning terang
+SOFT = (255, 190, 220)      # nota end card & disclaimer
+
+
+def apply_theme(theme):
+    """Tukar warna tema dari config, cth. {"paper_top": [r, g, b], ...}."""
+    g = globals()
+    for k, v in (theme or {}).items():
+        g[k.upper()] = tuple(v)
 
 # Kad video
 CARD_W, CARD_H, BORDER = 740, 1316, 14
@@ -357,7 +365,7 @@ def end_card(paper, ec, t):
     if np_ > 0:
         fn = font(HAND, 48)
         tw = fn.getlength(ec["note"])
-        d.text(((W - tw) / 2, 1300), ec["note"], font=fn, fill=(255, 190, 220) + (int(255 * np_),))
+        d.text(((W - tw) / 2, 1300), ec["note"], font=fn, fill=SOFT + (int(255 * np_),))
     return f
 
 
@@ -475,7 +483,7 @@ def disclaimer(frame, text):
     d = ImageDraw.Draw(frame)
     for i, ln in enumerate(lines):
         lw = f.getlength(ln)
-        d.text(((W - lw) / 2, H - 100 + i * 34), ln, font=f, fill=(255, 200, 225, 255))
+        d.text(((W - lw) / 2, H - 100 + i * 34), ln, font=f, fill=SOFT + (255,))
 
 
 # ---------------------------------------------------------------- audio
@@ -504,6 +512,7 @@ def whoosh_track(times, total, path, sr=44100):
 def main(cfg_path):
     with open(cfg_path, encoding="utf-8") as fh:
         cfg = json.load(fh)
+    apply_theme(cfg.get("theme"))
     src, out = cfg["input"], cfg["output"]
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     clip_dur = probe_duration(src)
@@ -542,7 +551,8 @@ def main(cfg_path):
         frame.alpha_composite(shadow, (CARD_CX - shadow.width // 2 + 6, CARD_CY - shadow.height // 2 + 10 + oy))
         frame.alpha_composite(card, (CARD_CX - card.width // 2, CARD_CY - card.height // 2 + oy))
         draw_beats(frame, cfg, t)
-        disclaimer(frame, cfg["disclaimer"])
+        if cfg.get("disclaimer"):
+            disclaimer(frame, cfg["disclaimer"])
         frame.alpha_composite(grain[i % len(grain)])
         enc.stdin.write(frame.convert("RGB").tobytes())
         last = frame
@@ -562,7 +572,8 @@ def main(cfg_path):
         for k in range(int(dur * FPS)):
             t = k / FPS
             f = swipe_in(prev, fn(t), t)
-            disclaimer(f, cfg["disclaimer"])
+            if cfg.get("disclaimer"):
+                disclaimer(f, cfg["disclaimer"])
             f.alpha_composite(grain[i % len(grain)])
             enc.stdin.write(f.convert("RGB").tobytes())
             last = f

@@ -1,0 +1,137 @@
+{
+  "input": "input/tudung.mp4",
+  "output": "output/tudung-vox.mp4",
+  "mirror": false,
+  "theme": {
+    "paper_top": [10, 22, 52],
+    "paper_bot": [28, 48, 96],
+    "ink": [250, 247, 238],
+    "hl_text": [14, 26, 60],
+    "magenta": [28, 48, 110],
+    "yellow": [255, 214, 60],
+    "red": [255, 120, 96],
+    "soft": [200, 215, 245]
+  },
+  "beats": [
+    {
+      "start": 0.0,
+      "end": 4.4,
+      "kicker": "Koleksi baru",
+      "headline": ["Tudung bawal", "sulam manik"],
+      "highlight": 1
+    },
+    {
+      "start": 4.4,
+      "end": 8.2,
+      "kicker": "Lihat coraknya",
+      "headline": ["Corak jaring", "penuh manik"],
+      "highlight": 1
+    },
+    {
+      "start": 8.2,
+      "end": 12.0,
+      "kicker": "Bila dipakai",
+      "headline": ["Jatuh cantik", "& nampak mewah"],
+      "highlight": 1
+    },
+    {
+      "start": 12.0,
+      "end": 16.2,
+      "kicker": "Dari dekat",
+      "headline": ["Setiap manik", "dijahit kemas"],
+      "highlight": 1
+    },
+    {
+      "start": 16.2,
+      "end": 20.3,
+      "kicker": "Gayanya",
+      "headline": ["Sesuai ke majlis,", "kerja & raya"],
+      "highlight": 1
+    },
+    {
+      "start": 20.3,
+      "end": 24.2,
+      "kicker": "Pilihan warna",
+      "headline": ["Ada juga", "warna hitam"],
+      "highlight": 1
+    },
+    {
+      "start": 24.2,
+      "end": 31.0,
+      "kicker": "Pilihan warna",
+      "headline": ["Dan kelabu", "lembut"],
+      "highlight": 1
+    },
+    {
+      "start": 31.0,
+      "end": 34.6,
+      "kicker": "Jangan tunggu",
+      "headline": ["Pilih warna", "kegemaran awak"],
+      "highlight": 1
+    }
+  ],
+  "stickies": [
+    {
+      "text": "Navy, hitam & kelabu. Mana satu pilihan awak?",
+      "start": 26.0,
+      "end": 31.0,
+      "x": 760,
+      "y": 1500,
+      "rot": 4
+    }
+  ],
+  "zooms": [
+    {
+      "start": 5.2,
+      "end": 8.0,
+      "zoom": 1.35,
+      "x": 0.5,
+      "y": 0.62
+    }
+  ],
+  "circles": [
+    {
+      "x": 0.5,
+      "y": 0.6,
+      "rx": 250,
+      "ry": 230,
+      "start": 5.6,
+      "end": 8.0
+    }
+  ],
+  "arrows": [
+    {
+      "text": "Warna hitam",
+      "from_x": 600,
+      "from_y": 1560,
+      "to_x": 0.45,
+      "to_y": 0.62,
+      "start": 21.6,
+      "end": 24.2
+    }
+  ],
+  "stamps": [
+    {
+      "text": "DETAIL MANIK",
+      "x": 760,
+      "y": 1450,
+      "start": 12.8,
+      "end": 16.2
+    },
+    {
+      "text": "3 WARNA",
+      "x": 780,
+      "y": 560,
+      "start": 24.8,
+      "end": 31.0
+    }
+  ],
+  "end_card": {
+    "duration": 3.5,
+    "kicker": "Tudung bawal sulam manik",
+    "product_name": "NAMA JENAMA",
+    "lines": ["Cantik, kemas,", "nampak mewah."],
+    "button": "PM UNTUK ORDER",
+    "note": "Navy • Hitam • Kelabu"
+  }
+}
