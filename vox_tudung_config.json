@@ -57,21 +57,11 @@
     },
     {
       "start": 4.4,
-      "end": 8.2,
-      "kicker": "Lihat coraknya",
-      "headline": [
-        "Corak jaring",
-        "penuh batu"
-      ],
-      "highlight": 1
-    },
-    {
-      "start": 8.2,
       "end": 12.0,
-      "kicker": "Bila dipakai",
+      "kicker": "Promosi",
       "headline": [
-        "Jatuh cantik",
-        "& nampak mewah"
+        "Beli 3 PERCUMA 1",
+        "4 helai RM99 je!"
       ],
       "highlight": 1
     },
@@ -88,10 +78,10 @@
     {
       "start": 16.2,
       "end": 20.3,
-      "kicker": "Gayanya",
+      "kicker": "Pilihan design",
       "headline": [
-        "Kerja, majlis,",
-        "raya pun boleh!"
+        "Design bukan",
+        "biasa-biasa!"
       ],
       "highlight": 1
     },
@@ -107,7 +97,7 @@
     },
     {
       "start": 24.2,
-      "end": 31.0,
+      "end": 28.4,
       "kicker": "Pilihan design",
       "headline": [
         "Pelbagai",
@@ -116,9 +106,19 @@
       "highlight": 1
     },
     {
+      "start": 28.4,
+      "end": 31.0,
+      "kicker": "Harga terbaik",
+      "headline": [
+        "Beli 3 PERCUMA 1",
+        "4 helai RM99 je!"
+      ],
+      "highlight": 1
+    },
+    {
       "start": 31.0,
       "end": 34.6,
-      "kicker": "Ameyra Exclusive",
+      "kicker": "Tunggu apa lagi?",
       "headline": [
         "Klik sekarang,",
         "ORDER NOW!"
@@ -129,32 +129,15 @@
   "stickies": [
     {
       "text": "Navy, hitam, kelabu & banyak lagi warna!",
-      "start": 26.0,
-      "end": 31.0,
+      "start": 25.0,
+      "end": 28.4,
       "x": 760,
       "y": 1500,
       "rot": 4
     }
   ],
-  "zooms": [
-    {
-      "start": 5.2,
-      "end": 8.0,
-      "zoom": 1.35,
-      "x": 0.5,
-      "y": 0.62
-    }
-  ],
-  "circles": [
-    {
-      "x": 0.5,
-      "y": 0.6,
-      "rx": 250,
-      "ry": 230,
-      "start": 5.6,
-      "end": 8.0
-    }
-  ],
+  "zooms": [],
+  "circles": [],
   "arrows": [
     {
       "text": "Warna hitam",
@@ -172,12 +155,22 @@
     "kicker": "Tudung bawal bertatah batu",
     "product_name": "AMEYRA EXCLUSIVE",
     "lines": [
-      "Pelbagai design batu,",
-      "bermacam pilihan warna."
+      "Beli 3 PERCUMA 1,",
+      "4 helai RM99 sahaja!"
     ],
     "button": "ORDER NOW",
-    "note": "Klik & order sekarang!",
-    "name_size": 80
+    "note": "Pelbagai design batu & warna",
+    "name_size": 80,
+    "price_tag": {
+      "start": 0.9,
+      "x": 540,
+      "y": 1560,
+      "r": 190,
+      "top": "4 HELAI",
+      "big": "RM99",
+      "bottom": "SAHAJA",
+      "rot": -8
+    }
   },
   "speed": 1.15,
   "pop": true,
@@ -190,8 +183,9 @@
     "volume": 0.3,
     "impacts": [
       0.0,
+      5.2,
       12.0,
-      24.2
+      28.6
     ]
   },
   "banners": [
@@ -213,9 +207,9 @@
     },
     {
       "text": "BANYAK WARNA!",
-      "start": 24.4,
-      "end": 26.4,
-      "y": 1480,
+      "start": 20.6,
+      "end": 22.4,
+      "y": 1320,
       "rot": -4,
       "size": 84
     },
@@ -226,6 +220,30 @@
       "y": 1520,
       "rot": -3,
       "size": 80
+    }
+  ],
+  "price_tags": [
+    {
+      "start": 5.2,
+      "end": 12.0,
+      "x": 790,
+      "y": 1320,
+      "r": 225,
+      "top": "4 HELAI",
+      "big": "RM99",
+      "bottom": "BELI 3 FREE 1",
+      "rot": 10
+    },
+    {
+      "start": 28.6,
+      "end": 31.0,
+      "x": 790,
+      "y": 1320,
+      "r": 225,
+      "top": "4 HELAI",
+      "big": "RM99",
+      "bottom": "BELI 3 FREE 1",
+      "rot": -8
     }
   ]
 }

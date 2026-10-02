@@ -292,6 +292,46 @@ def banner(frame, text, t, start, end, cy, rot=-4, size=96):
     frame.alpha_composite(lyr, (int(W / 2 - lyr.width / 2), int(cy - lyr.height / 2)))
 
 
+def price_tag(frame, pt, t):
+    """Lencana harga 'starburst' (cth. 4 HELAI / RM99 / SAHAJA) yang berdenyut."""
+    start, end = pt["start"], pt.get("end", 99)
+    if not (start <= t < end):
+        return
+    p = ease_back((t - start) / 0.35, 2.6)
+    if p <= 0:
+        return
+    r = pt.get("r", 210)
+    size = 2 * r + 40
+    lyr = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(lyr)
+    c = size / 2
+    star = []
+    for k in range(48):
+        rr = r if k % 2 == 0 else r * 0.86
+        a = math.pi * k / 24
+        star.append((c + rr * math.cos(a), c + rr * math.sin(a)))
+    d.polygon([(x + 10, y + 14) for x, y in star], fill=(0, 0, 0, 110))
+    d.polygon(star, fill=RED + (255,))
+    d.ellipse((c - r * 0.74, c - r * 0.74, c + r * 0.74, c + r * 0.74), outline=(255, 255, 255, 230), width=5)
+    for txt, fs, dy, mw in ((pt.get("top", ""), int(r * 0.2), -r * 0.44, 1.1), (pt["big"], int(r * 0.5), -r * 0.22, 1.4),
+                            (pt.get("bottom", ""), int(r * 0.17), r * 0.34, 1.05)):
+        if not txt:
+            continue
+        f = font(SANS_B, fs)
+        while f.getlength(txt) > r * mw and fs > 10:
+            fs -= 4
+            f = font(SANS_B, fs)
+        d.text((c - f.getlength(txt) / 2, c + dy), txt, font=f, fill=(255, 255, 255, 255))
+    rot = pt.get("rot", 10) + math.sin(t * 4) * 3
+    sc = max(0.05, p) * (1 + 0.04 * math.sin(max(0, t - start - 0.4) * 7))
+    lyr = lyr.rotate(rot, expand=True, resample=Image.BICUBIC)
+    lyr = lyr.resize((max(1, int(lyr.width * sc)), max(1, int(lyr.height * sc))), Image.BILINEAR)
+    a = clamp((end - t) / 0.15)
+    if a < 1:
+        lyr.putalpha(lyr.getchannel("A").point(lambda v: int(v * a)))
+    frame.alpha_composite(lyr, (int(pt["x"] - lyr.width / 2), int(pt["y"] - lyr.height / 2)))
+
+
 def strips(frame, items, t, start, end, y0=1180):
     """Senarai bernombor atas jalur kertas koyak."""
     if not (start <= t < end):
@@ -382,6 +422,8 @@ def draw_beats(frame, cfg, t):
         stamp(frame, s["text"], s["x"], s["y"], t, s["start"], s["end"])
     for l in cfg.get("lists", []):
         strips(frame, l["items"], t, l["start"], l["end"], l.get("y", 1180))
+    for pt in cfg.get("price_tags", []):
+        price_tag(frame, pt, t)
     for bn in cfg.get("banners", []):
         banner(frame, bn["text"], t, bn["start"], bn["end"], bn.get("y", 1500), bn.get("rot", -4), bn.get("size", 96))
 
@@ -402,6 +444,8 @@ def end_card(paper, ec, t):
         d.rectangle((x0 + 10, y0 + 12, x0 + bw + 10, y0 + bh + 12), fill=(0, 0, 0, int(90 * p)))
         d.rectangle((x0, y0, x0 + bw, y0 + bh), fill=YELLOW + (int(255 * p),))
         d.text((x0 + (bw - tw) / 2, y0 + (bh - 70) / 2), ec["button"], font=fb, fill=HL_TEXT + (int(255 * p),))
+    if ec.get("price_tag"):
+        price_tag(f, ec["price_tag"], t)
     np_ = ease((t - 1.5) / 0.3)
     if np_ > 0:
         fn = font(HAND, 48)
