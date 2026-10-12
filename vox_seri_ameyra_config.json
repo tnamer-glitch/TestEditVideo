@@ -4,44 +4,59 @@
   "mirror": false,
   "theme": {
     "paper_top": [
-      10,
-      22,
-      52
+      244,
+      237,
+      222
     ],
     "paper_bot": [
-      28,
-      48,
-      96
+      233,
+      223,
+      201
     ],
     "ink": [
-      250,
-      247,
-      238
+      22,
+      30,
+      56
     ],
     "hl_text": [
-      14,
-      26,
-      60
+      22,
+      30,
+      56
     ],
     "magenta": [
-      28,
-      48,
-      110
+      30,
+      50,
+      112
     ],
     "yellow": [
       255,
-      214,
-      60
+      212,
+      52
     ],
     "red": [
-      255,
-      120,
-      96
+      214,
+      46,
+      46
     ],
     "soft": [
-      200,
-      215,
-      245
+      70,
+      76,
+      96
+    ],
+    "kicker": [
+      214,
+      46,
+      46
+    ],
+    "strip": [
+      252,
+      250,
+      244
+    ],
+    "grid": [
+      110,
+      130,
+      165
     ]
   },
   "beats": [
@@ -232,7 +247,7 @@
   "voice_lufs": -11,
   "music": {
     "bpm": 124,
-    "volume": 0.3,
+    "volume": 0.25,
     "impacts": [
       0.0,
       10.6,
@@ -285,17 +300,32 @@
       "start": 10.6,
       "end": 17.5,
       "rot": 10
-    },
+    }
+  ],
+  "vox_look": true,
+  "source": "Sumber: Seri Ameyra Hijab",
+  "grade": "eq=contrast=1.06:saturation=0.92,colorbalance=rs=0.04:bs=-0.04",
+  "math_panels": [
     {
-      "x": 790,
-      "y": 1320,
-      "r": 225,
-      "top": "4 HELAI",
-      "big": "RM99",
-      "bottom": "BELI 3 FREE 1",
       "start": 50.2,
       "end": 55.2,
-      "rot": -8
+      "y": 1390,
+      "title": "Beli 3 percuma 1",
+      "count": 4,
+      "free": 1,
+      "total": 99,
+      "each": "≈ RM24.75 sehelai!",
+      "rot": -2
+    }
+  ],
+  "name_tags": [
+    {
+      "name": "Serina Redzuawan",
+      "role": "Artis & pengacara TV",
+      "start": 3.2,
+      "end": 8.6,
+      "x": 110,
+      "y": 1430
     }
   ]
 }

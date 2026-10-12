@@ -32,6 +32,14 @@ INK_CARD = (30, 20, 30)     # teks atas kad putih/kuning
 YELLOW = (255, 206, 38)     # highlighter emas
 RED = (255, 232, 0)         # marker kuning terang
 SOFT = (255, 190, 220)      # nota end card & disclaimer
+KICKER = None               # warna kicker (lalai: YELLOW)
+STRIP = (250, 247, 240)     # jalur kertas keratan untuk tajuk
+GRID = (110, 130, 165)      # garis grid kertas
+# rupa 'Vox' tambahan (dihidupkan dari config "vox_look")
+PAPER_GRID = False
+STRIPS = False
+STOP_MOTION = False
+TAPE = False
 
 
 def apply_theme(theme):
@@ -90,8 +98,32 @@ def make_paper(seed=3):
     img = Image.fromarray(np.clip(base, 0, 255).astype(np.uint8)).convert("RGBA")
     # garis halus gaya kertas nota
     d2 = ImageDraw.Draw(img)
-    for y in range(0, H, 64):
-        d2.line((0, y, W, y), fill=(255, 255, 255, 9), width=1)
+    if PAPER_GRID:
+        ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d3 = ImageDraw.Draw(ov)
+        for x in range(0, W, 54):
+            d3.line((x, 0, x, H), fill=GRID + (34,), width=1)
+        for y in range(0, H, 54):
+            d3.line((0, y, W, y), fill=GRID + (34,), width=1)
+        # titik halftone di sudut (rupa cetakan)
+        for cx, cy in ((0, 0), (W, H)):
+            for yy in range(-340, 341, 22):
+                for xx in range(-340, 341, 22):
+                    dd = math.hypot(xx, yy)
+                    if dd < 340:
+                        r = 7 * (1 - dd / 340)
+                        px, py = cx + xx, cy + yy
+                        d3.ellipse((px - r, py - r, px + r, py + r), fill=GRID + (60,))
+        img.alpha_composite(ov)
+        # serat kertas
+        for _ in range(260):
+            x, y = rng.uniform(0, W), rng.uniform(0, H)
+            a = rng.uniform(0, math.pi)
+            ln = rng.uniform(8, 26)
+            d2.line((x, y, x + ln * math.cos(a), y + ln * math.sin(a)), fill=(120, 100, 70, 26), width=1)
+    else:
+        for y in range(0, H, 64):
+            d2.line((0, y, W, y), fill=(255, 255, 255, 9), width=1)
     return img
 
 
@@ -135,7 +167,7 @@ def kicker(frame, text, t, start, y=150):
     x0 = (W - tw) / 2
     d = ImageDraw.Draw(frame)
     d.line((x0, y + 52, x0 + tw * p, y + 52), fill=RED, width=6)
-    col = YELLOW + (int(255 * p),)
+    col = (KICKER or YELLOW) + (int(255 * p),)
     d.text((x0, y), spaced, font=f, fill=col)
 
 
@@ -166,6 +198,11 @@ def headline(frame, lines, t, start, y=215, size=74, hl_idx=None, seed=1):
         x = (W - tw) / 2
         yy = y + i * lh + (int((base_size - size) * 0.6) if POP else int((1 - p) * 20))
         col = INK
+        is_hl = hl_idx is not None and i in (hl_idx if isinstance(hl_idx, (list, tuple)) else [hl_idx])
+        if STRIPS and not is_hl:
+            sh_box = (x - 22 + 8, yy + size * 0.12 + 9, x + tw + 22 + 8, yy + size * 1.2 + 9)
+            rough_rect(d, sh_box, (0, 0, 0, int(55 * p)), seed + 40 + i)
+            rough_rect(d, (x - 22, yy + size * 0.12, x + tw + 22, yy + size * 1.2), STRIP + (int(255 * p),), seed + 20 + i)
         if hl_idx is not None and i in (hl_idx if isinstance(hl_idx, (list, tuple)) else [hl_idx]):
             hp = ease((t - st) / 0.2) if POP else ease((t - st - 0.15) / 0.4)
             if hp > 0:
@@ -377,14 +414,14 @@ def zoom_at(t, zooms):
     return z, px, py
 
 
-def card_frame(src, t, zooms):
+def card_frame(src, t, zooms, rot=None):
     z, px, py = zoom_at(t, zooms)
     cw, chh = W / z, H / z
     left, top = px * (W - cw), py * (H - chh)
     img = src.crop((int(left), int(top), int(left + cw), int(top + chh))).resize((CARD_W, CARD_H), Image.BILINEAR)
     card = Image.new("RGBA", (CARD_W + 2 * BORDER, CARD_H + 2 * BORDER), (252, 251, 247, 255))
     card.paste(img, (BORDER, BORDER))
-    return card.rotate(CARD_ROT, expand=True, resample=Image.BICUBIC)
+    return card.rotate(CARD_ROT if rot is None else rot, expand=True, resample=Image.BICUBIC)
 
 
 def card_to_screen(nx, ny):
@@ -422,6 +459,10 @@ def draw_beats(frame, cfg, t):
         stamp(frame, s["text"], s["x"], s["y"], t, s["start"], s["end"])
     for l in cfg.get("lists", []):
         strips(frame, l["items"], t, l["start"], l["end"], l.get("y", 1180))
+    for nt in cfg.get("name_tags", []):
+        name_tag(frame, nt, t)
+    for mp in cfg.get("math_panels", []):
+        math_panel(frame, mp, t)
     for pt in cfg.get("price_tags", []):
         price_tag(frame, pt, t)
     for bn in cfg.get("banners", []):
@@ -649,6 +690,143 @@ def music_track(total, path, bpm=124, impacts=(), sr=44100):
     write_wav(path, out / max(1e-6, np.abs(out).max()) * 0.9, sr)
 
 
+def jitter(t, amp=1.0):
+    """Gegaran 'stop-motion' (berubah setiap 3 bingkai, gaya animasi kolaj)."""
+    if not STOP_MOTION:
+        return 0, 0, 0.0
+    r = np.random.default_rng(int(t * FPS) // 3 + 7)
+    return int(r.uniform(-4, 4) * amp), int(r.uniform(-4, 4) * amp), float(r.uniform(-0.45, 0.45) * amp)
+
+
+def tape(frame, cx, cy, ang, w=190, h=56, seed=0):
+    """Sekeping pita pelekat separa lut sinar."""
+    r = np.random.default_rng(seed)
+    lyr = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(lyr)
+    pts = [(0, 0)]
+    for k in range(1, 7):
+        pts.append((r.uniform(-6, 6), h * k / 6))
+    pts += [(w + r.uniform(-6, 6), h * k / 6) for k in range(6, -1, -1)]
+    d.polygon(pts, fill=(238, 228, 196, 205))
+    for k in range(0, w, 9):
+        d.line((k, 0, k, h), fill=(255, 255, 255, 18), width=1)
+    lyr = lyr.rotate(ang, expand=True, resample=Image.BICUBIC)
+    frame.alpha_composite(lyr, (int(cx - lyr.width / 2), int(cy - lyr.height / 2)))
+
+
+def source_caption(frame, text, dx=0, dy=0):
+    f = font(SANS_B, 24)
+    x, y = CARD_CX - CARD_W / 2 + dx, CARD_CY + CARD_H / 2 + 34 + dy
+    ImageDraw.Draw(frame).text((x, y), text.upper(), font=f, fill=(KICKER or YELLOW) + (230,))
+
+
+def math_panel(frame, mp, t):
+    """Panel infografik: ikon tudung (3 + 1 percuma) = harga, lalu harga sehelai."""
+    start, end = mp["start"], mp["end"]
+    if not (start <= t < end):
+        return
+    lt = t - start
+    p = ease_back(lt / 0.35)
+    pw, ph = 940, 620
+    lyr = Image.new("RGBA", (pw + 40, ph + 40), (0, 0, 0, 0))
+    d = ImageDraw.Draw(lyr)
+    rough_rect(d, (26, 30, pw + 26, ph + 30), (0, 0, 0, 80), 91)
+    rough_rect(d, (10, 10, pw + 10, ph + 10), STRIP + (255,), 92)
+    for gx in range(10, pw + 10, 40):
+        d.line((gx, 10, gx, ph + 10), fill=GRID + (30,), width=1)
+    for gy in range(10, ph + 10, 40):
+        d.line((10, gy, pw + 10, gy), fill=GRID + (30,), width=1)
+    ft = font(SANS_B, 34)
+    title = mp.get("title", "").upper()
+    d.text((pw / 2 + 10 - ft.getlength(" ".join(title)) / 2, 34), " ".join(title), font=ft, fill=RED + (255,))
+    n, free = mp.get("count", 4), mp.get("free", 1)
+    iw, gap = 170, 32
+    x0 = 10 + (pw - (n * iw + (n - 1) * gap)) / 2
+    for k in range(n):
+        ip = ease_back((lt - 0.35 - k * 0.3) / 0.3)
+        if ip <= 0:
+            continue
+        cx, cy = x0 + k * (iw + gap) + iw / 2, 220
+        s2 = iw / 2 * ip
+        is_free = k >= n - free
+        fill = YELLOW if is_free else MAGENTA
+        tri = [(cx - s2, cy - s2 * 0.55), (cx + s2, cy - s2 * 0.55), (cx, cy + s2 * 0.85)]
+        d.polygon([(a + 6, b + 7) for a, b in tri], fill=(0, 0, 0, 70))
+        d.polygon(tri, fill=fill + (255,))
+        for bx in range(-2, 3):
+            for by in range(0, 3 - abs(bx) // 2):
+                rx, ry = cx + bx * s2 * 0.22, cy - s2 * 0.3 + by * s2 * 0.25
+                d.ellipse((rx - 4, ry - 4, rx + 4, ry + 4), fill=(255, 255, 255, 220))
+        fl = font(SANS_B, 30)
+        lab = "PERCUMA" if is_free else f"#{k + 1}"
+        d.text((cx - fl.getlength(lab) / 2, 352), lab, font=fl, fill=(RED if is_free else INK_CARD) + (int(255 * clamp(ip)),))
+        if is_free and lt > 0.35 + k * 0.3 + 0.35:
+            cp = clamp((lt - 0.35 - k * 0.3 - 0.35) / 0.4)
+            pts = []
+            for j in range(int(40 * cp) + 1):
+                a = -math.pi / 2 + 2.15 * math.pi * j / 40
+                pts.append((cx + (iw * 0.62 + 6 * math.sin(j)) * math.cos(a), cy + 20 + iw * 0.62 * math.sin(a)))
+            if len(pts) > 1:
+                d.line(pts, fill=RED + (255,), width=7, joint="curve")
+    tt = 0.35 + n * 0.3 + 0.3
+    if lt > tt:
+        cp = ease((lt - tt) / 0.6)
+        fb = font(SERIF_B, 92)
+        val = mp.get("total", 99) * cp
+        txt = f"= RM{val:.0f}"
+        tw = fb.getlength(txt)
+        rough_rect(d, (pw / 2 + 10 - tw / 2 - 20, 404, pw / 2 + 10 + tw / 2 + 20, 512), YELLOW + (255,), 93)
+        d.text((pw / 2 + 10 - tw / 2, 404), txt, font=fb, fill=HL_TEXT + (255,))
+    if lt > tt + 0.7 and mp.get("each"):
+        fh = font(HAND, 52)
+        ep = clamp((lt - tt - 0.7) / 0.3)
+        tw = fh.getlength(mp["each"])
+        ex = pw / 2 + 10 - tw / 2
+        d.text((ex, 522), mp["each"], font=fh, fill=RED + (int(255 * ep),))
+        d.line((ex, 588, ex + tw * ep, 592), fill=RED + (255,), width=5)
+    jx, jy, jr = jitter(t, 0.6)
+    lyr = lyr.rotate(mp.get("rot", -2) + jr, expand=True, resample=Image.BICUBIC)
+    sc = max(0.05, p)
+    if sc != 1:
+        lyr = lyr.resize((max(1, int(lyr.width * sc)), max(1, int(lyr.height * sc))), Image.BILINEAR)
+    a = clamp((end - t) / 0.15)
+    if a < 1:
+        lyr.putalpha(lyr.getchannel("A").point(lambda v: int(v * a)))
+    cx, cy = W / 2 + jx, mp.get("y", 1300) + jy
+    frame.alpha_composite(lyr, (int(cx - lyr.width / 2), int(cy - lyr.height / 2)))
+    if sc > 0.9:
+        tape(frame, cx - pw * 0.42, cy - ph / 2 + 6, 28, seed=5)
+        tape(frame, cx + pw * 0.42, cy - ph / 2 + 6, -24, seed=6)
+
+
+def name_tag(frame, nt, t):
+    """Label nama gaya Vox: nama atas jalur gelap, peranan atas jalur kuning, slaid masuk dari kiri."""
+    start, end = nt["start"], nt["end"]
+    if not (start <= t < end):
+        return
+    lt = t - start
+    a = clamp((end - t) / 0.2)
+    x, y = nt.get("x", 90), nt.get("y", 1420)
+    fn, fr = font(SERIF_B, nt.get("size", 64)), font(SANS_B, 34)
+    d = ImageDraw.Draw(frame)
+    p1 = ease(lt / 0.35)
+    if p1 > 0:
+        tw = fn.getlength(nt["name"])
+        w1 = (tw + 56) * p1
+        rough_rect(d, (x + 8, y + 10, x + w1 + 8, y + 96), (0, 0, 0, int(70 * a)), 81)
+        rough_rect(d, (x, y, x + w1, y + 86), INK + (int(255 * a),), 82)
+        if p1 > 0.8:
+            d.text((x + 28, y + 6), nt["name"], font=fn, fill=STRIP + (int(255 * a),))
+    p2 = ease((lt - 0.3) / 0.35)
+    if p2 > 0:
+        role = " ".join(nt["role"].upper())
+        tw = fr.getlength(role)
+        w2 = (tw + 44) * p2
+        rough_rect(d, (x + 18, y + 92, x + 18 + w2, y + 150), YELLOW + (int(255 * a),), 83)
+        if p2 > 0.8:
+            d.text((x + 40, y + 102), role, font=fr, fill=HL_TEXT + (int(255 * a),))
+
+
 def punch(t, starts, dur=0.28):
     """Pulangkan (skala kad, kuat kilat putih) untuk 'punch' pada mula babak."""
     for s0 in starts:
@@ -663,8 +841,10 @@ def main(cfg_path):
     with open(cfg_path, encoding="utf-8") as fh:
         cfg = json.load(fh)
     apply_theme(cfg.get("theme"))
-    global POP
+    global POP, PAPER_GRID, STRIPS, STOP_MOTION, TAPE
     POP = cfg.get("pop", False)
+    vl = cfg.get("vox_look", False)
+    PAPER_GRID = STRIPS = STOP_MOTION = TAPE = bool(vl)
     speed = cfg.get("speed", 1.0)
     src, out = cfg["input"], cfg["output"]
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
@@ -680,7 +860,8 @@ def main(cfg_path):
     grain = make_grain()
     shadow = card_shadow()
 
-    vf = ("hflip," if cfg.get("mirror") else "") + (f"setpts=PTS/{speed}," if speed != 1 else "") + f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}"
+    vf = ("hflip," if cfg.get("mirror") else "") + (f"setpts=PTS/{speed}," if speed != 1 else "") + f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}" \
+        + (f",{cfg['grade']}" if cfg.get("grade") else "")
     dec = subprocess.Popen([FF, "-loglevel", "error", "-i", src, "-vf", vf, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
                            stdout=subprocess.PIPE)
     tmp_video = out + ".video.mp4"
@@ -697,7 +878,8 @@ def main(cfg_path):
         t = i / FPS * speed  # masa dalam klip asal (config guna masa ini)
         src_img = Image.frombytes("RGB", (W, H), raw)
         frame = paper.copy()
-        card = card_frame(src_img, t, cfg.get("zooms", []))
+        jx, jy, jr = jitter(t)
+        card = card_frame(src_img, t, cfg.get("zooms", []), CARD_ROT + jr)
         # kad masuk dengan sedikit 'drop' pada awal
         p = ease(t / 0.4)
         oy = int((1 - p) * 120)
@@ -706,7 +888,13 @@ def main(cfg_path):
             card = card.resize((int(card.width * sc), int(card.height * sc)), Image.BILINEAR)
             oy += int(math.sin(t * 90) * 10 * (sc - 1) / 0.07)
         frame.alpha_composite(shadow, (CARD_CX - shadow.width // 2 + 6, CARD_CY - shadow.height // 2 + 10 + oy))
-        frame.alpha_composite(card, (CARD_CX - card.width // 2, CARD_CY - card.height // 2 + oy))
+        frame.alpha_composite(card, (CARD_CX - card.width // 2 + jx, CARD_CY - card.height // 2 + oy + jy))
+        if TAPE:
+            for (nx, ang, sd) in ((0.08, 32, 1), (0.92, -30, 2)):
+                tx, ty = card_to_screen(nx, 0.0)
+                tape(frame, tx + jx, ty + oy + jy - (sc - 1) * CARD_H / 2, ang, seed=sd)
+        if cfg.get("source"):
+            source_caption(frame, cfg["source"], jx, jy)
         draw_beats(frame, cfg, t)
         if flash > 0:
             frame.alpha_composite(Image.new("RGBA", (W, H), (255, 255, 255, int(150 * flash))))
