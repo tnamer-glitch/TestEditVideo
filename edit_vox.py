@@ -487,6 +487,8 @@ def end_card(paper, ec, t):
         d.text((x0 + (bw - tw) / 2, y0 + (bh - 70) / 2), ec["button"], font=fb, fill=HL_TEXT + (int(255 * p),))
     if ec.get("price_tag"):
         price_tag(f, ec["price_tag"], t)
+    if ec.get("route"):
+        route_map(f, ec["route"], t)
     np_ = ease((t - 1.5) / 0.3)
     if np_ > 0:
         fn = font(HAND, 48)
@@ -773,7 +775,7 @@ def math_panel(frame, mp, t):
         cp = ease((lt - tt) / 0.6)
         fb = font(SERIF_B, 92)
         val = mp.get("total", 99) * cp
-        txt = f"= RM{val:.0f}"
+        txt = f"= {mp.get('currency', 'RM')}{val:.0f}"
         tw = fb.getlength(txt)
         rough_rect(d, (pw / 2 + 10 - tw / 2 - 20, 404, pw / 2 + 10 + tw / 2 + 20, 512), YELLOW + (255,), 93)
         d.text((pw / 2 + 10 - tw / 2, 404), txt, font=fb, fill=HL_TEXT + (255,))
@@ -827,6 +829,81 @@ def name_tag(frame, nt, t):
             d.text((x + 40, y + 102), role, font=fr, fill=HL_TEXT + (int(255 * a),))
 
 
+def chapter_bar(frame, chapters, t):
+    """Bar bab gaya Vox di atas skrin; bab semasa diserlah kuning."""
+    cur = -1
+    for k, ch in enumerate(chapters):
+        if t >= ch["start"]:
+            cur = k
+    if cur < 0:
+        return
+    f = font(SANS_B, 25)
+    labels = [f"{k + 1} {ch['label'].upper()}" for k, ch in enumerate(chapters)]
+    gap = 26
+    widths = [f.getlength(l) + 28 for l in labels]
+    x = (W - sum(widths) - gap * (len(labels) - 1)) / 2
+    y = 62
+    d = ImageDraw.Draw(frame)
+    d.line((x, y + 22, x + sum(widths) + gap * (len(labels) - 1), y + 22), fill=INK + (60,), width=2)
+    for k, (lab, w) in enumerate(zip(labels, widths)):
+        if k == cur:
+            rough_rect(d, (x, y, x + w, y + 44), YELLOW + (255,), 70 + k)
+            col = HL_TEXT + (255,)
+        else:
+            rough_rect(d, (x, y, x + w, y + 44), STRIP + (255,), 70 + k)
+            col = INK + (110 if k > cur else 200,)
+        d.text((x + 14, y + 8), lab, font=f, fill=col)
+        x += w + gap
+
+
+def route_map(frame, rt, t):
+    """Grafik peta ringkas: dua pin bersambung garis putus-putus berlengkung + kapal terbang."""
+    p = ease((t - rt.get("start", 0.0)) / 0.9)
+    if p <= 0:
+        return
+    d = ImageDraw.Draw(frame)
+    y = rt.get("y", 380)
+    x0, x1 = rt.get("x0", 230), rt.get("x1", 850)
+    pts = []
+    for k in range(61):
+        u = k / 60
+        pts.append((x0 + (x1 - x0) * u, y - math.sin(math.pi * u) * 120))
+    n = int(60 * p)
+    for k in range(0, n, 2):
+        d.line((pts[k], pts[k + 1]), fill=RED + (255,), width=6)
+    for (px, lab, show) in ((x0, rt["from"], True), (x1, rt["to"], p > 0.95)):
+        if not show:
+            continue
+        d.ellipse((px - 30, y - 30 - 34, px + 30, y + 30 - 34), fill=INK + (255,))
+        d.polygon([(px - 22, y - 22), (px + 22, y - 22), (px, y + 18)], fill=INK + (255,))
+        d.ellipse((px - 12, y - 46, px + 12, y - 22), fill=YELLOW + (255,))
+        f = font(SANS_B, 32)
+        lab = " ".join(lab.upper())
+        tw = f.getlength(lab)
+        rough_rect(d, (px - tw / 2 - 16, y + 30, px + tw / 2 + 16, y + 80), STRIP + (255,), 61 if px == x0 else 62)
+        d.text((px - tw / 2, y + 38), lab, font=f, fill=INK + (255,))
+    if 0 < p < 1 or p >= 1:
+        k = min(n, 60)
+        px, py = pts[k]
+        fp = font(SANS_B, 64)
+        d.text((px - 30, py - 44), "\u2708", font=fp, fill=MAGENTA + (255,))
+
+
+def reveal_section(paper, rv, t):
+    """Babak 'jawapan' selepas klip: kicker + tajuk + panel infografik harga."""
+    f = paper.copy()
+    if rv.get("chapters"):
+        chapter_bar(f, rv["chapters"], 1e9)
+    kicker(f, rv["kicker"], t, 0.0)
+    headline(f, rv["headline"], t, 0.15, size=rv.get("size", 92), hl_idx=rv.get("highlight"), seed=88)
+    math_panel(f, dict(rv["panel"], start=0.35, end=99), t)
+    for n in rv.get("notes", []):
+        sticky(f, n["text"], t, n["start"], 99, n["x"], n["y"], n.get("rot", -4), n.get("w", 430))
+    if rv.get("source"):
+        ImageDraw.Draw(f).text((90, 1760), rv["source"].upper(), font=font(SANS_B, 24), fill=(KICKER or YELLOW) + (230,))
+    return f
+
+
 def punch(t, starts, dur=0.28):
     """Pulangkan (skala kad, kuat kilat putih) untuk 'punch' pada mula babak."""
     for s0 in starts:
@@ -854,7 +931,9 @@ def main(cfg_path):
     pf = cfg.get("proof")
     ts_dur = ts["duration"] if ts else 0.0
     pf_dur = pf["duration"] if pf else 0.0
-    total = clip_dur + ts_dur + pf_dur + ec["duration"]
+    rv = cfg.get("reveal")
+    rv_dur = rv["duration"] if rv else 0.0
+    total = clip_dur + ts_dur + pf_dur + rv_dur + ec["duration"]
 
     paper = make_paper()
     grain = make_grain()
@@ -896,6 +975,8 @@ def main(cfg_path):
         if cfg.get("source"):
             source_caption(frame, cfg["source"], jx, jy)
         draw_beats(frame, cfg, t)
+        if cfg.get("chapters"):
+            chapter_bar(frame, cfg["chapters"], t)
         if flash > 0:
             frame.alpha_composite(Image.new("RGBA", (W, H), (255, 255, 255, int(150 * flash))))
         if cfg.get("disclaimer"):
@@ -913,6 +994,8 @@ def main(cfg_path):
         sections.append((ts["duration"], lambda t: testimonial_section(paper, ts, t)))
     if pf:
         sections.append((pf["duration"], lambda t: proof_section(paper, pf, t)))
+    if rv:
+        sections.append((rv["duration"], lambda t: reveal_section(paper, rv, t)))
     sections.append((ec["duration"], lambda t: end_card(paper, ec, t)))
     for dur, fn in sections:
         prev = last
@@ -932,7 +1015,7 @@ def main(cfg_path):
     # SFX whoosh pada setiap kemasukan teks
     times = sorted({x / speed for x in {b["start"] for b in cfg["beats"]} | {n["start"] for n in cfg.get("stickies", [])}
                     | {l["start"] for l in cfg.get("lists", [])} | {bn["start"] for bn in cfg.get("banners", [])}}
-                   | {clip_dur, clip_dur + ts_dur, clip_dur + ts_dur + pf_dur}
+                   | {clip_dur, clip_dur + ts_dur, clip_dur + ts_dur + pf_dur, clip_dur + ts_dur + pf_dur + rv_dur}
                    | ({clip_dur + ts_dur + n["start"] for n in pf.get("notes", [])} if pf else set())
                    | ({clip_dur + 0.6 + j * 0.7 for j in range(len(ts["comments"]))} if ts else set()))
     sfx = out + ".sfx.wav"
@@ -949,7 +1032,7 @@ def main(cfg_path):
     mus = cfg.get("music")
     if mus:
         mpath = out + ".music.wav"
-        impacts = [x / speed for x in mus.get("impacts", [])] + [clip_dur]
+        impacts = [x / speed for x in mus.get("impacts", [])] + [clip_dur] + ([clip_dur + rv_dur + 0.4] if rv else [])
         music_track(total, mpath, mus.get("bpm", 124), impacts)
         inputs += ["-i", mpath]
         # muzik 'duck' (perlahan) bila ada suara
