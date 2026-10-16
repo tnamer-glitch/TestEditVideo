@@ -1,0 +1,198 @@
+{
+  "input": "input/arbeela-ugc-2.mp4",
+  "output": "output/arbeela-slim-vox-2.mp4",
+  "mirror": false,
+  "mute": [],
+  "beats": [
+    {
+      "start": 0.0,
+      "end": 4.2,
+      "kicker": "Masalahnya",
+      "headline": [
+        "Kenapa ibu sibuk",
+        "susah nak kurus?"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 4.2,
+      "end": 11.8,
+      "kicker": "Cuba tengok",
+      "headline": [
+        "Makan sedap,",
+        "badan tetap ringan"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 11.8,
+      "end": 17.0,
+      "kicker": "Jawapannya",
+      "headline": [
+        "Kenalkan",
+        "Arbeela Slim"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 17.0,
+      "end": 23.6,
+      "kicker": "Khasiatnya",
+      "headline": [
+        "Amalkan",
+        "setiap hari"
+      ],
+      "highlight": 1
+    },
+    {
+      "start": 23.6,
+      "end": 28.8,
+      "kicker": "Bayangkan",
+      "headline": [
+        "Yakin bergambar",
+        "semula."
+      ],
+      "highlight": [
+        0,
+        1
+      ]
+    },
+    {
+      "start": 28.8,
+      "end": 33.0,
+      "kicker": "Jom mula",
+      "headline": [
+        "Badan ideal",
+        "bermula hari ini"
+      ],
+      "highlight": 1
+    }
+  ],
+  "stickies": [
+    {
+      "text": "Tak sempat gym. Diet tak pernah konsisten.",
+      "start": 1.6,
+      "end": 4.2,
+      "x": 790,
+      "y": 1540,
+      "rot": 5
+    },
+    {
+      "text": "Rasa sedap, tak rasa macam diet!",
+      "start": 6.5,
+      "end": 11.6,
+      "x": 790,
+      "y": 1500,
+      "rot": -4
+    }
+  ],
+  "zooms": [
+    {
+      "start": 12.0,
+      "end": 14.0,
+      "zoom": 1.3,
+      "x": 0.5,
+      "y": 0.3
+    }
+  ],
+  "circles": [
+    {
+      "x": 0.22,
+      "y": 0.26,
+      "rx": 120,
+      "ry": 170,
+      "start": 14.9,
+      "end": 16.4
+    }
+  ],
+  "arrows": [
+    {
+      "text": "Arbeela Slim",
+      "from_x": 780,
+      "from_y": 1480,
+      "to_x": 0.3,
+      "to_y": 0.5,
+      "start": 24.2,
+      "end": 28.6
+    }
+  ],
+  "stamps": [
+    {
+      "text": "ARBEELA SLIM",
+      "x": 780,
+      "y": 700,
+      "start": 15.2,
+      "end": 17.0
+    }
+  ],
+  "lists": [
+    {
+      "items": [
+        "Bantu turunkan berat badan",
+        "Kawal selera makan",
+        "Lancarkan pencernaan",
+        "Tingkatkan tenaga"
+      ],
+      "start": 17.4,
+      "end": 23.6,
+      "y": 1110
+    }
+  ],
+  "testimonials": {
+    "duration": 4.0,
+    "kicker": "Kata pelanggan",
+    "headline": [
+      "Rasa kenyang",
+      "lebih lama"
+    ],
+    "highlight": 1,
+    "comments": [
+      {
+        "name": "Ayu M.",
+        "text": "Sarapan makan telur je, tapi kenyang sampai malam!",
+        "likes": 1,
+        "circle": true
+      },
+      {
+        "name": "Nur S.",
+        "text": "Saya suka sebab rasa kenyang lebih lama.",
+        "likes": 1
+      }
+    ],
+    "stamp": "TESTIMONI SEBENAR",
+    "y": 760
+  },
+  "proof": {
+    "duration": 4.5,
+    "kicker": "Bukti pengguna",
+    "headline": [
+      "65kg → 52kg",
+      "turun 13kg"
+    ],
+    "highlight": 1,
+    "image": "assets/testimoni-sebelum-selepas.jpg",
+    "notes": [
+      {
+        "text": "\"Hasil konsisten, dah loss 7 kg!\" — Siti R.",
+        "start": 1.6,
+        "x": 700,
+        "y": 1520,
+        "rot": -4,
+        "w": 460
+      }
+    ]
+  },
+  "end_card": {
+    "duration": 3.0,
+    "kicker": "Arbeela Slim",
+    "product_name": "Arbeela Slim",
+    "lines": [
+      "Badan ideal,",
+      "keyakinan diri!"
+    ],
+    "button": "DAPATKAN SEKARANG",
+    "note": "Badan ideal bermula hari ini"
+  },
+  "disclaimer": "*Keputusan berbeza mengikut individu. Amalkan pemakanan seimbang & gaya hidup aktif.",
+  "clip_end": 33.0
+}

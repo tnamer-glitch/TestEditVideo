@@ -507,6 +507,9 @@ def main(cfg_path):
     src, out = cfg["input"], cfg["output"]
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     clip_dur = probe_duration(src)
+    # potong hujung klip (cth. outro CapCut), "clip_end": saat
+    if cfg.get("clip_end"):
+        clip_dur = min(clip_dur, cfg["clip_end"])
     ec = cfg["end_card"]
     ts = cfg.get("testimonials")
     pf = cfg.get("proof")
@@ -519,7 +522,7 @@ def main(cfg_path):
     shadow = card_shadow()
 
     vf = ("hflip," if cfg.get("mirror") else "") + f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS}"
-    dec = subprocess.Popen([FF, "-loglevel", "error", "-i", src, "-vf", vf, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+    dec = subprocess.Popen([FF, "-loglevel", "error", "-t", f"{clip_dur:.3f}", "-i", src, "-vf", vf, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
                            stdout=subprocess.PIPE)
     tmp_video = out + ".video.mp4"
     enc = subprocess.Popen(
@@ -581,7 +584,7 @@ def main(cfg_path):
     mute_f = "".join(f"volume=0:enable='between(t,{m0},{m1})'," for m0, m1 in cfg.get("mute", []))
     whoosh_track(times, total, sfx)
     subprocess.run(
-        [FF, "-y", "-loglevel", "error", "-i", tmp_video, "-i", src, "-i", sfx,
+        [FF, "-y", "-loglevel", "error", "-i", tmp_video, "-t", f"{clip_dur:.3f}", "-i", src, "-i", sfx,
          "-filter_complex",
          f"[1:a]{mute_f}loudnorm=I=-14:TP=-1.5:LRA=11,aresample=44100,afade=t=out:st={clip_dur - 0.4}:d=0.4,"
          f"apad=whole_dur={total:.3f}[v];[2:a]aresample=44100,volume=0.5[s];"
