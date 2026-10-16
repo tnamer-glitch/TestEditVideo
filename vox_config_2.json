@@ -2,7 +2,12 @@
   "input": "input/arbeela-ugc-2.mp4",
   "output": "output/arbeela-slim-vox-2.mp4",
   "mirror": false,
-  "mute": [],
+  "mute": [
+    [
+      29.97,
+      30.48
+    ]
+  ],
   "beats": [
     {
       "start": 0.0,
